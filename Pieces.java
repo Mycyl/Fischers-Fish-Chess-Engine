@@ -25,16 +25,24 @@ public class Pieces {
         int rank = index / 8;
         int file = index % 8;
 
-        int numUp = rank;
-        int numDown = 7- rank;
-        int numRight = 7 - file;
-        int numLeft = file;
+        int numN = rank;
+        int numS = 7- rank;
+        int numE = 7 - file;
+        int numW = file;
+        int numNE = Math.min(numN, numE);
+        int numSE = Math.min(numS, numE);
+        int numSW = Math.min(numS, numW);
+        int numNW = Math.min(numN, numW);
 
         moveDataArrayList = new int[] {
-            numUp,
-            numDown,
-            numRight,
-            numLeft
+            numN,
+            numS,
+            numE,
+            numW,
+            numNE,
+            numSE,
+            numSW,
+            numNW
         };
 
         return moveDataArrayList;
