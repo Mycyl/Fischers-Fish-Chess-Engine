@@ -75,7 +75,7 @@ public class Board {
      * <p>
      * 
      * @see #Board(String)
-     * @see Pieces#isWhite(char) 
+     * @see Pieces#isWhite(char)
      * @see Character#getNuericValue(char)
      * @see Character#isDigit(char)
      * @see String#toCharArray()
@@ -109,6 +109,4 @@ public class Board {
         }
 
     }
-
-
 }

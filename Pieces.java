@@ -57,6 +57,13 @@ public class Pieces {
     */
     public static int White = -1;
 
+    /**
+     * A list witholding integer values that represent the orthoganal 
+     * and diagonal offsets that would be applied to a piece's index to 
+     * move it in a certain direction.
+     */
+    public static int[] dirOffsets = {8, -8, -1, 1, 7, -7, 9, -9};
+
     /** 
      * A list witholding integer values that represent computed data 
      * about the position of a piece on a certain index
@@ -72,6 +79,13 @@ public class Pieces {
         return (Character.isUpperCase(symbol));
     }
 
+    public static boolean isPieceType (int piece, int type) {
+        return (Math.abs(piece) == type);
+    }
+
+    public static boolean sameColor (int piece1, int color) {
+        return (piece1 * color > 0);
+    }
     /**
      * ranks = rows
      * files = columns
@@ -93,14 +107,14 @@ public class Pieces {
         int numNW = Math.min(numN, numW);
 
         moveDataArrayList = new int[] {
-            numN,
-            numS,
-            numE,
-            numW,
-            numNE,
-            numSE,
-            numSW,
-            numNW
+            numS, // Offset -8
+            numN, // Offset 8
+            numW, // Offset 1
+            numE, // Offset -1
+            numSW, // Offset -7
+            numNE, // Offset 9
+            numSE, // Offset 7
+            numNW // Offset -9
         };
 
         return moveDataArrayList;
