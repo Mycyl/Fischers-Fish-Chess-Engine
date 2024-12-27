@@ -57,13 +57,6 @@ public class Pieces {
     */
     public static int White = -1;
 
-    /**
-     * A list witholding integer values that represent the orthoganal 
-     * and diagonal offsets that would be applied to a piece's index to 
-     * move it in a certain direction.
-     */
-    public static int[] dirOffsets = {8, -8, -1, 1, 7, -7, 9, -9};
-
     /** 
      * A list witholding integer values that represent computed data 
      * about the position of a piece on a certain index
@@ -79,21 +72,99 @@ public class Pieces {
         return (Character.isUpperCase(symbol));
     }
 
+    /**
+     * A method used to indicate whether the parameter (int piece) is of type (int type)
+     * @param piece     the piece to be checked
+     * @param type      the type to be checked
+     * <p>
+     * @return          the piece is of the type
+     */
     public static boolean isPieceType (int piece, int type) {
         return (Math.abs(piece) == type);
     }
 
+    /**
+     * A method used to indicate whether the parameter (int piece1) is of the same color as the parameter (int color)
+     * @param piece1    the piece to be checked
+     * @param color     the color to be checked
+     * <p>
+     * @return          the piece is of the same color
+     */
     public static boolean sameColor (int piece1, int color) {
         return (piece1 * color > 0);
     }
 
+    public static boolean isWhite (int piece) {
+        return sameColor(piece, White);
+    }
+
+    /**
+     * A method used to indicate whether the parameter (int piece) is empty
+     * @param piece     the piece to be checked
+     * <p>
+     * @return          the piece is empty
+     */
     public static boolean isEmpty (int piece) {
         return (piece == Empty);
     }
 
+    /**
+     * A method used to indicate whether the parameter (int piece) is a sliding piece
+     * @param piece     the piece to be checked
+     * <p>
+     * @return          the piece is a sliding piece
+     */
     public static boolean isSlidingPiece (int piece) {
         return (Math.abs(piece) == Rook || Math.abs(piece) == Bishop || Math.abs(piece) == Queen);
     }
+
+    /**
+     * A method used to indicate whether the parameter (int piece) is a pawn
+     * @param piece     the piece to be checked
+     * <p>
+     * @return          the piece is a pawn
+     */
+    public static boolean isPawn (int piece) {
+        return (Math.abs(piece) == Pawn);
+    }
+
+    /**
+     * A method used to indicate whether the parameter (int piece) is a king
+     * @param piece     the piece to be checked
+     * <p>
+     * @return          the piece is a king
+     */
+    public static boolean isKing (int piece) {
+        return (Math.abs(piece) == King);
+    }
+
+    /**
+     * A method used to indicate whether the parameter (int piece) is a knight
+     * @param piece     the piece to be checked
+     * <p>
+     * @return          the piece is a knight
+     */
+    public static boolean isKnight (int piece) {
+        return (Math.abs(piece) == Knight);
+    }
+
+    /**
+     * A method used to indicate whether the parameter piece at the target index is capturable
+     * @param index     the index of the piece to be checked
+     * @param colorUp   the color of the player who is taking the piece
+     * @param board     the current board state
+     * <p>
+     * @return          the piece at the target index is capturable
+     */
+    public static boolean isCapturable (int index, int colorUp, Board board) {
+        if (!sameColor(board.getPosition().get(index), colorUp) && !isEmpty(board.getPosition().get(index))) {
+            return true;
+        }
+        return false;
+    }
+
+
+
     /**
      * ranks = rows
      * files = columns
