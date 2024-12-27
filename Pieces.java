@@ -86,6 +86,14 @@ public class Pieces {
     public static boolean sameColor (int piece1, int color) {
         return (piece1 * color > 0);
     }
+
+    public static boolean isEmpty (int piece) {
+        return (piece == Empty);
+    }
+
+    public static boolean isSlidingPiece (int piece) {
+        return (Math.abs(piece) == Rook || Math.abs(piece) == Bishop || Math.abs(piece) == Queen);
+    }
     /**
      * ranks = rows
      * files = columns
