@@ -1,5 +1,9 @@
+import java.util.ArrayList;
 
 public class Pieces {
+
+    private static final int WHITE_KING_START_INDEX = 60;
+    private static final int BLACK_KING_START_INDEX = 4;
 
     private Pieces () {}
 
@@ -163,7 +167,23 @@ public class Pieces {
         return false;
     }
 
+    public static boolean kingNotMoved (ArrayList<int[]> allMovesTaken) { // allMovesTaken [[original, new], [original, new], [original, new]]
+        for (int[] move : allMovesTaken) {
+            if (move[0] == WHITE_KING_START_INDEX || move[0] == BLACK_KING_START_INDEX) {
+                return false;
+            }
+        }
+        return true;
+    }
 
+    public static boolean rookNotMoved (ArrayList<int[]> allMovesTaken, int index) {
+        for (int[] move : allMovesTaken) {
+            if (move[0] == index) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * ranks = rows

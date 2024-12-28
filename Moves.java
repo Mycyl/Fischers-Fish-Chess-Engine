@@ -7,7 +7,10 @@ public class Moves {
 
     private static boolean isValidMove (int startingIndex, int targetIndex, int dirOffsetIndex, Board board) { // maybe make this more generally applicable
 
+        if (targetIndex < 0 || targetIndex > 63) {return false;}
+
         int pieceTesting = board.getPosition().get(startingIndex);
+        int colorUp = Pieces.sameColor(pieceTesting, Pieces.White) ? Pieces.White : Pieces.Black; 
 
         int startingIndexFile = startingIndex % 8;
         int startingIndexRank = startingIndex / 8;
@@ -27,12 +30,18 @@ public class Moves {
             offsetTesting = DirectionOffsets.dirOffsetsKnight[dirOffsetIndex];
             validDelta = DirectionOffsets.knightValidDeltaDictionary.get(offsetTesting);
 
-        } else if (Pieces.isPawn(pieceTesting) && Pieces.isWhite(pieceTesting)) { // check isWhite function
+        } else if (Pieces.isPawn(pieceTesting)) {
 
-            offsetTesting = DirectionOffsets.dirOffsetsSliding[dirOffsetIndex];
-            //validDelta = 
+            offsetTesting = DirectionOffsets.dirOffsetsPawn[dirOffsetIndex];
+            int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
+            validDelta = DirectionOffsets.pawnValidDeltaDictionary.get(offsetTesting * dirMultiplier);
 
-        } // figure out pawn validation offset
+        } else if (Pieces.isKing(pieceTesting)) {
+
+            offsetTesting = DirectionOffsets.dirOffsetsKing[dirOffsetIndex];
+            validDelta = DirectionOffsets.kingValidDeltaDictionary.get(offsetTesting);
+
+        }
 
         return Arrays.equals(testingDelta, validDelta);
     }
@@ -110,7 +119,7 @@ public class Moves {
         return moves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generatePawnMoves (int startingIndex, Board board) { // account for indexes with overflow
+    public static ArrayList<ArrayList<Integer>> generatePawnMoves (int startingIndex, Board board) {
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
         int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
@@ -140,21 +149,59 @@ public class Moves {
     }
 
     public static ArrayList<ArrayList<Integer>> generateKnightMoves (int startingIndex, Board board) {
+
         ArrayList<ArrayList<Integer>> knightMoves = new ArrayList<ArrayList<Integer>>();
+
+        int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
+
+        for (int i = 0; i < DirectionOffsets.dirOffsetsKnight.length; i++) {
+
+            int targetIndex = startingIndex + DirectionOffsets.dirOffsetsKnight[i];
+            ArrayList<Integer> move = new ArrayList<Integer>();
+            move.add(startingIndex);
+            move.add(targetIndex);
+
+            if (isValidMove(startingIndex, targetIndex, i, board)) {
+                if (!Pieces.sameColor(board.getPosition().get(targetIndex), colorUp) || Pieces.isEmpty(board.getPosition().get(targetIndex))) {
+                    knightMoves.add(move);
+                }
+            }
+        }
+
         return knightMoves;
     }
 
     public static ArrayList<ArrayList<Integer>> generateKingMoves (int startingIndex, Board board) {
+
         ArrayList<ArrayList<Integer>> kingMoves = new ArrayList<ArrayList<Integer>>();
+
+        int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
+
+        for (int i = 0; i < DirectionOffsets.dirOffsetsKing.length; i++) {
+
+            int targetIndex = startingIndex + DirectionOffsets.dirOffsetsKing[i];
+            ArrayList<Integer> move = new ArrayList<Integer>();
+            move.add(startingIndex);
+            move.add(targetIndex);
+
+            
+
+            if (isValidMove(startingIndex, targetIndex, i, board)) {
+                if (!Pieces.sameColor(board.getPosition().get(targetIndex), colorUp) || Pieces.isEmpty(board.getPosition().get(targetIndex))) {
+                    kingMoves.add(move);
+                }
+            }
+        }
+
         return kingMoves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generateCastlingMoves (int startingIndex, Board board) {
+    public static ArrayList<ArrayList<Integer>> generateCastlingMoves (int startingIndex, Board board, ArrayList<ArrayList<Integer>> allMovesTaken) { // To be implemented
         ArrayList<ArrayList<Integer>> castlingMoves = new ArrayList<ArrayList<Integer>>();
         return castlingMoves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generateEnPassantMoves (int startingIndex, Board board) {
+    public static ArrayList<ArrayList<Integer>> generateEnPassantMoves (int startingIndex, Board board, ArrayList<ArrayList<Integer>> allMovesTaken) { // To be implemented
         ArrayList<ArrayList<Integer>> enPassantMoves = new ArrayList<ArrayList<Integer>>();
         return enPassantMoves;
     }
