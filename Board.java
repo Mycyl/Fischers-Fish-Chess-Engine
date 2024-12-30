@@ -68,6 +68,10 @@ public class Board {
         return position;
     }
 
+    public void setPosition (ArrayList<Integer> position) {
+        this.position = position;
+    }
+
     /**
      * Instantiation Method:
      * Updates the position ArrayList, to be called in the constructor to populate 

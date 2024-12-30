@@ -3,6 +3,8 @@ import java.util.Arrays;
 
 public class Moves {
     
+    private static ArrayList<int[]> allMovesTaken = new ArrayList<int[]>(); // update this
+
     private Moves () {}
 
     private static boolean isValidMove (int startingIndex, int targetIndex, int dirOffsetIndex, Board board) { // maybe make this more generally applicable
@@ -46,9 +48,11 @@ public class Moves {
         return Arrays.equals(testingDelta, validDelta);
     }
 
-    public static ArrayList<ArrayList<ArrayList<Integer>>> generateMoves (Board board) {
+    public static ArrayList<ArrayList<ArrayList<Integer>>> generatePseudoLegalMoves (Board board) {
+        //boolean kingMoved = Game.kingMoved;
         ArrayList<ArrayList<ArrayList<Integer>>> allMoves = new ArrayList<ArrayList<ArrayList<Integer>>>();
         for (int i = 0; i < 64; i++) {
+            int colorUp = Pieces.sameColor(board.getPosition().get(i), Pieces.White) ? Pieces.White : Pieces.Black; 
             if (board.getPosition().get(i) == Pieces.Empty) {
                 continue;
             }
@@ -196,8 +200,54 @@ public class Moves {
         return kingMoves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generateCastlingMoves (int startingIndex, Board board, ArrayList<ArrayList<Integer>> allMovesTaken) { // To be implemented
-        ArrayList<ArrayList<Integer>> castlingMoves = new ArrayList<ArrayList<Integer>>();
+    public static ArrayList<ArrayList<ArrayList<Integer>>> generateCastlingMoves (int startingIndex, Board board) { // To be implemented
+        ArrayList<ArrayList<ArrayList<Integer>>> castlingMoves = new ArrayList<ArrayList<ArrayList<Integer>>>();
+        int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
+        boolean kingMoved = Pieces.kingMoved(Game.allMovesTaken, colorUp);
+
+        if (kingMoved) {
+            return castlingMoves;
+        }
+
+        int[] dirOffsetsKingCastle = DirectionOffsets.dirOffsetsKingCastle;
+
+        int rookOneIndex = startingIndex + dirOffsetsKingCastle[0];
+        int rookTwoIndex = startingIndex + dirOffsetsKingCastle[dirOffsetsKingCastle.length - 1];
+
+        boolean rookOneMoved = Pieces.rookMoved(Game.allMovesTaken, rookOneIndex);
+        boolean rookTwoMoved = Pieces.rookMoved(Game.allMovesTaken, rookTwoIndex);
+
+        boolean[] rookMoved = {rookOneMoved, rookTwoMoved};
+        int[] rookIndexes = {rookOneIndex, rookTwoIndex};
+
+        for (int i = 0; i < rookMoved.length; i++) {
+            if (Pieces.castlingAvailable(rookMoved[i], kingMoved, startingIndex, rookIndexes[i], board)) {
+
+                int[] dirOffsetsMoveCastleKing = DirectionOffsets.dirOffsetsMoveCastleKing;
+                int[] dirOffsetsMoveCastleRook = DirectionOffsets.dirOffsetsMoveCastleRook;
+
+                ArrayList<ArrayList<Integer>> castlingMove = new ArrayList<ArrayList<Integer>>();
+                ArrayList<Integer> kingMove = new ArrayList<Integer>();
+                ArrayList<Integer> rookMove = new ArrayList<Integer>();
+
+                kingMove.add(startingIndex);
+                rookMove.add(rookIndexes[i]);
+
+                int kingTargetOffset = (startingIndex > rookIndexes[i]) ?  dirOffsetsMoveCastleKing[1] : dirOffsetsMoveCastleKing[0];
+                int rookTargetOffset = (startingIndex > rookIndexes[i]) ? dirOffsetsMoveCastleRook[1] : dirOffsetsMoveCastleRook[0];
+
+                int targetKingIndex = startingIndex + kingTargetOffset;
+                int rookTargetIndex = rookIndexes[i] + rookTargetOffset;
+
+                kingMove.add(targetKingIndex);
+                rookMove.add(rookTargetIndex);
+
+                castlingMove.add(kingMove);
+                castlingMove.add(rookMove);
+
+                castlingMoves.add(castlingMove); // check if placed right
+            }
+        }
         return castlingMoves;
     }
 

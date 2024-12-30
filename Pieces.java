@@ -2,8 +2,8 @@ import java.util.ArrayList;
 
 public class Pieces {
 
-    private static final int WHITE_KING_START_INDEX = 60;
-    private static final int BLACK_KING_START_INDEX = 4;
+    public static final int WHITE_KING_START_INDEX = 60;
+    public static final int BLACK_KING_START_INDEX = 4;
 
     private Pieces () {}
 
@@ -167,22 +167,43 @@ public class Pieces {
         return false;
     }
 
-    public static boolean kingNotMoved (ArrayList<int[]> allMovesTaken) { // allMovesTaken [[original, new], [original, new], [original, new]]
-        for (int[] move : allMovesTaken) {
-            if (move[0] == WHITE_KING_START_INDEX || move[0] == BLACK_KING_START_INDEX) {
+    public static boolean emptyBetween (Board board, int kingIndex, int rookIndex) {
+        int startIndex = (kingIndex > rookIndex) ? 1 : 4;
+        int endIndex = (kingIndex > rookIndex) ? 4 : 6;
+        for (int i = startIndex; i < endIndex; i++) {
+            int targetIndex = kingIndex + DirectionOffsets.dirOffsetsKingCastle[i];
+            if (board.getPosition().get(targetIndex) != Empty) {
                 return false;
             }
         }
         return true;
     }
 
-    public static boolean rookNotMoved (ArrayList<int[]> allMovesTaken, int index) {
+    public static boolean kingMoved (ArrayList<int[]> allMovesTaken, int color) { // allMovesTaken [[original, new], [original, new], [original, new]]
         for (int[] move : allMovesTaken) {
-            if (move[0] == index) {
-                return false;
+            if (color == White && move[0] == WHITE_KING_START_INDEX) {
+                return true;
+            } else if (color == Black && move[0] == BLACK_KING_START_INDEX) {
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+
+    public static boolean rookMoved (ArrayList<int[]> allMovesTaken, int index) {
+        for (int[] move : allMovesTaken) {
+            if (move[0] == index) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean castlingAvailable (boolean rookMoved, boolean kingMoved, int kingIndex, int rookIndex, Board board) { // check if the rook is in the right position to castle
+        if (!rookMoved && !kingMoved && emptyBetween(board, kingIndex, rookIndex)) { // make legal not pseudo legal
+            return true;
+        }
+        return false;
     }
 
     /**

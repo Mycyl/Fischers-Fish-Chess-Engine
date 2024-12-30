@@ -30,6 +30,11 @@ public class DirectionOffsets {
      */
     public static int[] dirOffsetsKing = {-9, -8, -7, -1, 1, 7, 8, 9};
 
+    public static int[] dirOffsetsKingCastle = {-4, -3, -2, -1, 1, 2, 3}; // The first and last offsets are the rook's position, the ones in between are the pieces in between
+
+    public static int[] dirOffsetsMoveCastleKing = {2, -2};
+    public static int[] dirOffsetsMoveCastleRook = {-2, 3};
+
     /**
      * A dictionary that holds the valid delta values for a knight piece
      * to move in a certain direction.
