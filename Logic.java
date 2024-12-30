@@ -27,6 +27,7 @@ public class Logic {
             board.setPosition(Game.updatePosition(board.getPosition(), move));
             System.out.println("White King: " + Moves.generateCastlingMoves(Pieces.WHITE_KING_START_INDEX, board));
             System.out.println("Black King: " + Moves.generateCastlingMoves(Pieces.BLACK_KING_START_INDEX, board));
+            System.out.println("All possible moves: " + Moves.generatePseudoLegalMoves (board));
             System.out.println(board.getPosition());
             System.out.println(Game.allMovesTaken);
         }

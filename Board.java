@@ -72,6 +72,11 @@ public class Board {
         this.position = position;
     }
 
+    public static int getIndexFromRankAndFile (int rank, int file) {
+        return rank * 8 + file;
+    }
+
+
     /**
      * Instantiation Method:
      * Updates the position ArrayList, to be called in the constructor to populate 

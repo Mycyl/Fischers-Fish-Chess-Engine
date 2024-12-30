@@ -34,6 +34,7 @@ public class DirectionOffsets {
 
     public static int[] dirOffsetsMoveCastleKing = {2, -2};
     public static int[] dirOffsetsMoveCastleRook = {-2, 3};
+    public static int[] dirOffsetsEnPassant = {-9, -7, 9, 7};
 
     /**
      * A dictionary that holds the valid delta values for a knight piece
@@ -78,5 +79,14 @@ public class DirectionOffsets {
             Map.entry(9, new int[] {1, 1})
         )
     );
+
+    public static Map<Integer, Integer> triggerRank = new HashMap<Integer, Integer> (
+        Map.ofEntries (
+            Map.entry(Pieces.Black, 4),
+            Map.entry(Pieces.White, 3)
+        )
+    );
+
+    
 
 }

@@ -17,4 +17,12 @@ public class Game {
         return position;
     }
 
+    public static int[] getLastMove () {
+        return allMovesTaken.get(allMovesTaken.size() - 1);
+    }
+
+    public static boolean isDoublePush (int pawnIndex) {
+        int[] LastMove = getLastMove();
+        return Math.abs(LastMove[0] - LastMove[1]) == 16 && LastMove[1] == pawnIndex;
+    }
 }

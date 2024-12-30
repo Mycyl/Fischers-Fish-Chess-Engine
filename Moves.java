@@ -64,6 +64,10 @@ public class Moves {
                 if (Moves.generatePawnMoves(i, board).size() > 0) {
                     allMoves.add(Moves.generatePawnMoves(i, board));
                 }
+                if (Moves.generateEnPassantMoves(i, board, Game.allMovesTaken).size() > 0) {
+                    System.out.println("En Passant Available");
+                    allMoves.add(Moves.generateEnPassantMoves(i, board, Game.allMovesTaken));
+                }
             } else if (Pieces.isKing(board.getPosition().get(i))) {
                 if (Moves.generateKingMoves(i, board).size() > 0) {
                     allMoves.add(Moves.generateKingMoves(i, board));
@@ -123,7 +127,7 @@ public class Moves {
         return moves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generatePawnMoves (int startingIndex, Board board) {
+    public static ArrayList<ArrayList<Integer>> generatePawnMoves (int startingIndex, Board board) { // double pushes, promotions
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
         int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
@@ -251,8 +255,62 @@ public class Moves {
         return castlingMoves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generateEnPassantMoves (int startingIndex, Board board, ArrayList<ArrayList<Integer>> allMovesTaken) { // To be implemented
+    public static ArrayList<ArrayList<Integer>> generateEnPassantMoves (int startingIndex, Board board, ArrayList<int[]> allMovesTaken) { // To be implemented
         ArrayList<ArrayList<Integer>> enPassantMoves = new ArrayList<ArrayList<Integer>>();
+
+        int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
+        int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
+        int rank = startingIndex / 8;
+        int file = startingIndex % 8;
+
+        int triggerRank = DirectionOffsets.triggerRank.get(colorUp);
+
+        if (rank != triggerRank) {
+            return enPassantMoves;
+        }
+
+        int adjacentFileLeft = (colorUp == Pieces.White) ? file - 1 : file + 1;
+        int adjacentFileRight = (colorUp == Pieces.White) ? file + 1: file - 1;
+
+        int leftAttackingPawnIndex = -1;
+        int rightAttackingPawnIndex = -1;
+
+        if (adjacentFileLeft >= 0 && adjacentFileLeft < 8) {
+            if (Pieces.isPawn((board.getPosition().get(Board.getIndexFromRankAndFile(triggerRank, adjacentFileLeft))))) {
+                leftAttackingPawnIndex = Board.getIndexFromRankAndFile(triggerRank, adjacentFileLeft);
+            }
+        }
+
+        if (adjacentFileRight < 8 && adjacentFileRight >= 0) {
+            if (Pieces.isPawn((board.getPosition().get(Board.getIndexFromRankAndFile(triggerRank, adjacentFileRight))))) {
+                leftAttackingPawnIndex = Board.getIndexFromRankAndFile(triggerRank, adjacentFileRight);
+            }
+        }
+
+        int leftAttackingPawnRank = leftAttackingPawnIndex / 8;
+        int rightAttackingPawnRank = rightAttackingPawnIndex / 8;
+
+        // check if same rank
+        if (leftAttackingPawnIndex != -1 && leftAttackingPawnRank == triggerRank && Game.isDoublePush(leftAttackingPawnIndex)) { // left is 9 right is 7
+            ArrayList<Integer> enPassantMove = new ArrayList<Integer>();
+            enPassantMove.add(startingIndex);
+            int targetIndex = startingIndex + DirectionOffsets.dirOffsetsPawn[0] * dirMultiplier;
+            enPassantMove.add(targetIndex);
+            if (isValidMove(startingIndex, targetIndex, 0, board)) {
+                enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
+            }
+        }
+
+        if (rightAttackingPawnIndex != -1 && rightAttackingPawnRank == triggerRank && Game.isDoublePush(rightAttackingPawnIndex)) {
+            ArrayList<Integer> enPassantMove = new ArrayList<Integer>();
+            enPassantMove.add(startingIndex);
+            int targetIndex = startingIndex + DirectionOffsets.dirOffsetsPawn[1] * dirMultiplier;
+            enPassantMove.add(targetIndex);
+            if (isValidMove(startingIndex, targetIndex, 1, board)) {
+                enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
+            }
+        }
+
         return enPassantMoves;
     }
 }
