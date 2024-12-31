@@ -1,0 +1,3 @@
+- Only generate moves for the color up
+- Switch color
+- Seperate color into different list moves.

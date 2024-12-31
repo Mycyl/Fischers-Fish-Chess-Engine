@@ -131,6 +131,7 @@ public class Moves {
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
         int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
+        int rank = startingIndex / 8;
 
         ArrayList<ArrayList<Integer>> pawnMoves = new ArrayList<ArrayList<Integer>>();
 
@@ -138,20 +139,34 @@ public class Moves {
             
             int targetIndex = startingIndex + DirectionOffsets.dirOffsetsPawn[i] * dirMultiplier;
             ArrayList<Integer> move = new ArrayList<Integer>();
-            move.add(startingIndex);
-            move.add(targetIndex);
-
-            if (isValidMove(startingIndex, targetIndex, i, board)) {
-                if (i % 2 == 0) {
-                    if (Pieces.isCapturable(targetIndex, colorUp, board)) {
-                        pawnMoves.add(move);
+            if (i != DirectionOffsets.dirOffsetsPawn.length - 1) {
+                move.add(startingIndex);
+                move.add(targetIndex);
+                if (isValidMove(startingIndex, targetIndex, i, board)) {
+                    if (i % 2 == 0) {
+                        if (Pieces.isCapturable(targetIndex, colorUp, board)) {
+                            pawnMoves.add(move);
+                        }
+                    } else {
+                        if (Pieces.isEmpty(board.getPosition().get(targetIndex))) {
+                            pawnMoves.add(move);
+                        }
                     }
-                } else {
-                    if (Pieces.isEmpty(board.getPosition().get(targetIndex))) {
-                        pawnMoves.add(move);
+                }
+            } else {
+                if (Pieces.isPieceType(board.getPosition().get(startingIndex), Pieces.Pawn) && DirectionOffsets.startingRankPawn.get(colorUp) == rank) {
+                    int doublePushIndex = startingIndex + DirectionOffsets.dirOffsetsPawn[i] * dirMultiplier;
+                    ArrayList<Integer> doublePushMove = new ArrayList<Integer>();
+                    doublePushMove.add(startingIndex);
+                    doublePushMove.add(doublePushIndex);
+                    if (isValidMove(startingIndex, doublePushIndex, i, board)) {
+                        if (Pieces.isEmpty(board.getPosition().get(doublePushIndex))) {
+                            pawnMoves.add(doublePushMove);
+                        }
                     }
                 }
             }
+
         }
         return pawnMoves;
     }
@@ -256,7 +271,7 @@ public class Moves {
     }
 
     public static ArrayList<ArrayList<Integer>> generateEnPassantMoves (int startingIndex, Board board, ArrayList<int[]> allMovesTaken) { // To be implemented
-        ArrayList<ArrayList<Integer>> enPassantMoves = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<Integer>> enPassantMoves = new ArrayList<ArrayList<Integer>>(); // test m
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
         int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;

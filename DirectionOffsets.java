@@ -16,7 +16,7 @@ public class DirectionOffsets {
      * A list witholding integer values that represent the offsets that 
      * would be applied to a pawn's index to move it in a certain direction.
      */
-    public static int[] dirOffsetsPawn = {9, 8, 7};
+    public static int[] dirOffsetsPawn = {9, 8, 7, 16};
 
     /**
      * A list witholding integer values that represent the offsets that 
@@ -33,8 +33,8 @@ public class DirectionOffsets {
     public static int[] dirOffsetsKingCastle = {-4, -3, -2, -1, 1, 2, 3}; // The first and last offsets are the rook's position, the ones in between are the pieces in between
 
     public static int[] dirOffsetsMoveCastleKing = {2, -2};
+
     public static int[] dirOffsetsMoveCastleRook = {-2, 3};
-    public static int[] dirOffsetsEnPassant = {-9, -7, 9, 7};
 
     /**
      * A dictionary that holds the valid delta values for a knight piece
@@ -58,12 +58,15 @@ public class DirectionOffsets {
 
     public static Map<Integer, int[]> pawnValidDeltaDictionary = new HashMap<Integer, int[]> (
         Map.ofEntries (
+            Map.entry(-16, new int[] {0, -2}),
             Map.entry(-9, new int[] {-1, -1}),
             Map.entry(-8, new int[] {0, -1}),
             Map.entry(-7, new int[] {1, -1}),
+            Map.entry(16,  new int[] {0, 2}),
             Map.entry(7, new int[] {-1, 1}),
             Map.entry(8, new int[] {0, 1}),
             Map.entry(9, new int[] {1, 1})
+            
         )
     );
 
@@ -77,6 +80,13 @@ public class DirectionOffsets {
             Map.entry(7, new int[] {-1, 1}),
             Map.entry(8, new int[] {0, 1}),
             Map.entry(9, new int[] {1, 1})
+        )
+    );
+
+    public static Map<Integer, Integer> startingRankPawn = new HashMap<Integer, Integer> (
+        Map.ofEntries (
+            Map.entry(Pieces.Black, 1),
+            Map.entry(Pieces.White, 6)
         )
     );
 

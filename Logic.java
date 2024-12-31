@@ -10,6 +10,7 @@ public class Logic {
         System.out.println(board.getPosition());
         System.out.println();
         System.out.println(Moves.generatePseudoLegalMoves(board)); 
+        System.out.println("Psuedo Legal Moves Available: " + Game.moveCounter(Moves.generatePseudoLegalMoves(board)));
 
         int response = 0;
         while (response != -1) {
@@ -28,6 +29,7 @@ public class Logic {
             System.out.println("White King: " + Moves.generateCastlingMoves(Pieces.WHITE_KING_START_INDEX, board));
             System.out.println("Black King: " + Moves.generateCastlingMoves(Pieces.BLACK_KING_START_INDEX, board));
             System.out.println("All possible moves: " + Moves.generatePseudoLegalMoves (board));
+            System.out.println("Psuedo Legal Moves Available: " + Game.moveCounter(Moves.generatePseudoLegalMoves(board)));
             System.out.println(board.getPosition());
             System.out.println(Game.allMovesTaken);
         }
