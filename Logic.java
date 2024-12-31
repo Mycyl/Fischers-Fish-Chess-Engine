@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Logic {
     
@@ -14,7 +15,9 @@ public class Logic {
 
         int response = 0;
         while (response != -1) {
-            
+            Moves.splitPseudoLegalMovesByColor(board);
+            System.out.println("White Moves:  " + Moves.whiteMoveList);
+            System.out.println("Black Moves:  " + Moves.blackMoveList);
             int[] move = new int[2];
             System.out.print("Enter a Starting Index: -1 to exit: ");
             response = scan.nextInt();

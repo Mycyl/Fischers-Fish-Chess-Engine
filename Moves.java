@@ -3,9 +3,24 @@ import java.util.Arrays;
 
 public class Moves {
     
-    private static ArrayList<int[]> allMovesTaken = new ArrayList<int[]>(); // update this
+    public static ArrayList<ArrayList<ArrayList<Integer>>> whiteMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
+    public static ArrayList<ArrayList<ArrayList<Integer>>> blackMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
 
     private Moves () {}
+
+    public static void splitPseudoLegalMovesByColor (Board board) {
+        ArrayList<ArrayList<ArrayList<Integer>>> allMoves = generatePseudoLegalMoves(board);
+        for (int i = 0; i < allMoves.size(); i++) {
+            ArrayList<ArrayList<Integer>> move = allMoves.get(i);
+            int startingIndex = move.get(0).get(0);
+            int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
+            if (colorUp == Pieces.White) {
+                whiteMoveList.add(move);
+            } else {
+                blackMoveList.add(move);
+            }
+        }
+    }
 
     private static boolean isValidMove (int startingIndex, int targetIndex, int dirOffsetIndex, Board board) { // maybe make this more generally applicable
 
