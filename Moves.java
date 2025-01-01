@@ -3,21 +3,28 @@ import java.util.Arrays;
 
 public class Moves {
     
-    public static ArrayList<ArrayList<ArrayList<Integer>>> whiteMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
-    public static ArrayList<ArrayList<ArrayList<Integer>>> blackMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
+    public static ArrayList<ArrayList<Integer>> whiteMoveList = new ArrayList<ArrayList<Integer>>();
+    public static ArrayList<ArrayList<Integer>> blackMoveList = new ArrayList<ArrayList<Integer>>();
 
-    private Moves () {}
+    private Moves () {} // Take out moves capturing the king
 
-    public static void splitPseudoLegalMovesByColor (Board board) {
+    public static void splitPseudoLegalMovesByColor (Board board) { // DEBUG
+
+        whiteMoveList.clear();
+        blackMoveList.clear();
+
         ArrayList<ArrayList<ArrayList<Integer>>> allMoves = generatePseudoLegalMoves(board);
+        System.out.println(allMoves);
         for (int i = 0; i < allMoves.size(); i++) {
-            ArrayList<ArrayList<Integer>> move = allMoves.get(i);
-            int startingIndex = move.get(0).get(0);
-            int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
-            if (colorUp == Pieces.White) {
-                whiteMoveList.add(move);
-            } else {
-                blackMoveList.add(move);
+            ArrayList<ArrayList<Integer>> pieceMoves = allMoves.get(i);
+            for (int j = 0; j < pieceMoves.size(); j++) {
+                int startingIndex = pieceMoves.get(j).get(0);
+                int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
+                if (colorUp == Pieces.White) {
+                    whiteMoveList.add(pieceMoves.get(j));
+                } else {
+                    blackMoveList.add(pieceMoves.get(j));
+                }
             }
         }
     }
@@ -68,18 +75,19 @@ public class Moves {
         ArrayList<ArrayList<ArrayList<Integer>>> allMoves = new ArrayList<ArrayList<ArrayList<Integer>>>();
         for (int i = 0; i < 64; i++) {
             int colorUp = Pieces.sameColor(board.getPosition().get(i), Pieces.White) ? Pieces.White : Pieces.Black; 
+            boolean kingInCheck = Pieces.isKingInCheck(colorUp, board);
             if (board.getPosition().get(i) == Pieces.Empty) {
                 continue;
             }
             if (Pieces.isSlidingPiece(board.getPosition().get(i))) {
-                if (Moves.generateSlidingMoves(i, board).size() > 0) {
+                if (!kingInCheck && Moves.generateSlidingMoves(i, board).size() > 0) {
                     allMoves.add(Moves.generateSlidingMoves(i, board));
                 }
             } else if (Pieces.isPawn(board.getPosition().get(i))) {
-                if (Moves.generatePawnMoves(i, board).size() > 0) {
+                if (!kingInCheck && Moves.generatePawnMoves(i, board).size() > 0) {
                     allMoves.add(Moves.generatePawnMoves(i, board));
                 }
-                if (Moves.generateEnPassantMoves(i, board, Game.allMovesTaken).size() > 0) {
+                if (!kingInCheck && Moves.generateEnPassantMoves(i, board, Game.allMovesTaken).size() > 0) {
                     System.out.println("En Passant Available");
                     allMoves.add(Moves.generateEnPassantMoves(i, board, Game.allMovesTaken));
                 }
@@ -88,7 +96,7 @@ public class Moves {
                     allMoves.add(Moves.generateKingMoves(i, board));
                 }
             } else if (Pieces.isKnight(board.getPosition().get(i))) {
-                if (Moves.generateKnightMoves(i, board).size() > 0) {
+                if (!kingInCheck && Moves.generateKnightMoves(i, board).size() > 0) {
                     allMoves.add(Moves.generateKnightMoves(i, board));
                 }
             }
@@ -118,6 +126,7 @@ public class Moves {
 
         ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
+        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int directionIndex = startingDirIndex; directionIndex < endingDirIndex; directionIndex++) {
             for (int n = 0; n < Pieces.moveData(startingIndex)[directionIndex]; n++) {
@@ -149,6 +158,7 @@ public class Moves {
         int rank = startingIndex / 8;
 
         ArrayList<ArrayList<Integer>> pawnMoves = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int i = 0; i < DirectionOffsets.dirOffsetsPawn.length; i++) {
             
@@ -191,6 +201,7 @@ public class Moves {
         ArrayList<ArrayList<Integer>> knightMoves = new ArrayList<ArrayList<Integer>>();
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
+        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int i = 0; i < DirectionOffsets.dirOffsetsKnight.length; i++) {
 
@@ -214,6 +225,7 @@ public class Moves {
         ArrayList<ArrayList<Integer>> kingMoves = new ArrayList<ArrayList<Integer>>();
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
+        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int i = 0; i < DirectionOffsets.dirOffsetsKing.length; i++) {
 
@@ -237,6 +249,7 @@ public class Moves {
     public static ArrayList<ArrayList<ArrayList<Integer>>> generateCastlingMoves (int startingIndex, Board board) { // To be implemented
         ArrayList<ArrayList<ArrayList<Integer>>> castlingMoves = new ArrayList<ArrayList<ArrayList<Integer>>>();
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
+        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
         boolean kingMoved = Pieces.kingMoved(Game.allMovesTaken, colorUp);
 
         if (kingMoved) {
@@ -289,6 +302,7 @@ public class Moves {
         ArrayList<ArrayList<Integer>> enPassantMoves = new ArrayList<ArrayList<Integer>>(); // test m
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
+        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
         int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
         int rank = startingIndex / 8;
         int file = startingIndex % 8;

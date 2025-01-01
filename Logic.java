@@ -10,15 +10,15 @@ public class Logic {
         Board board = new Board(Board.getStartingFen());
         System.out.println(board.getPosition());
         System.out.println();
-        System.out.println(Moves.generatePseudoLegalMoves(board)); 
-        System.out.println("Psuedo Legal Moves Available: " + Game.moveCounter(Moves.generatePseudoLegalMoves(board)));
+        Moves.generatePseudoLegalMoves(board);
 
         int response = 0;
         while (response != -1) {
-            Moves.splitPseudoLegalMovesByColor(board);
-            System.out.println("White Moves:  " + Moves.whiteMoveList);
-            System.out.println("Black Moves:  " + Moves.blackMoveList);
+            // System.out.println("White Moves:  " + Moves.whiteMoveList);
+            // System.out.println("Black Moves:  " + Moves.blackMoveList);
+            System.out.println("FEN STRING: " + Board.positionToFEN(board.getPosition()));
             int[] move = new int[2];
+            System.out.println();
             System.out.print("Enter a Starting Index: -1 to exit: ");
             response = scan.nextInt();
             scan.nextLine();
@@ -29,12 +29,23 @@ public class Logic {
             move[1] = endingIndex;
             Game.addMove(move);
             board.setPosition(Game.updatePosition(board.getPosition(), move));
-            System.out.println("White King: " + Moves.generateCastlingMoves(Pieces.WHITE_KING_START_INDEX, board));
-            System.out.println("Black King: " + Moves.generateCastlingMoves(Pieces.BLACK_KING_START_INDEX, board));
-            System.out.println("All possible moves: " + Moves.generatePseudoLegalMoves (board));
-            System.out.println("Psuedo Legal Moves Available: " + Game.moveCounter(Moves.generatePseudoLegalMoves(board)));
+
+            Moves.generatePseudoLegalMoves(board);
+
+            //Moves.splitPseudoLegalMovesByColor(board);
+            //System.out.println("Black Moves:  " + Moves.blackMoveList);
+
+            System.out.println("Is White King in Check: " + Pieces.isKingInCheck(Pieces.White, board));
+            System.out.println("Is Black King in Check: " + Pieces.isKingInCheck(Pieces.Black, board));
+            System.out.println("Black Moves: " + Moves.blackMoveList);
+            System.out.println("White Moves: " + Moves.whiteMoveList);
+            
+            // System.out.println("White King: " + Moves.generateCastlingMoves(Pieces.WHITE_KING_START_INDEX, board));
+            // System.out.println("Black King: " + Moves.generateCastlingMoves(Pieces.BLACK_KING_START_INDEX, board));
+            //System.out.println("All possible moves: " + Moves.generatePseudoLegalMoves (board));
+            // System.out.println("Psuedo Legal Moves Available: " + Game.moveCounter(Moves.generatePseudoLegalMoves(board)));
+
             System.out.println(board.getPosition());
-            System.out.println(Game.allMovesTaken);
         }
 
 

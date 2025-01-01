@@ -26,12 +26,4 @@ public class Game {
         return Math.abs(LastMove[0] - LastMove[1]) == 16 && LastMove[1] == pawnIndex;
     }
 
-    public static int moveCounter (ArrayList<ArrayList<ArrayList<Integer>>> pseudoLegalMoves) {
-        int counter = 0;
-        for (ArrayList<ArrayList<Integer>> piece : pseudoLegalMoves) {
-            counter += piece.size();
-        }
-        return counter;
-
-    }
 }

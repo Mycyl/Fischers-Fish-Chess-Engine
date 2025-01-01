@@ -76,6 +76,32 @@ public class Board {
         return rank * 8 + file;
     }
 
+    public static String positionToFEN (ArrayList<Integer> position) {
+        StringBuilder FEN = new StringBuilder();
+        int emptyCounter = 0;
+        for (int i = 0; i < 64; i++) {
+            if (position.get(i) == Pieces.Empty) {
+                emptyCounter++;
+            } else {
+                if (emptyCounter != 0) {
+                    FEN.append(emptyCounter);
+                    emptyCounter = 0;
+                }
+                FEN.append(DirectionOffsets.pieceTypeFromInt.get(position.get(i)));
+            }
+            if (i % 8 == 7) {
+                if (emptyCounter != 0) {
+                    FEN.append(emptyCounter);
+                    emptyCounter = 0;
+                }
+                if (i != 63) {
+                    FEN.append("/");
+                }
+            }
+        }
+        return FEN.toString();
+    }
+
 
     /**
      * Instantiation Method:

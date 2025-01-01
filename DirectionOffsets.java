@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 public class DirectionOffsets {
     
@@ -97,6 +98,21 @@ public class DirectionOffsets {
         )
     );
 
-    
+    public static Map<Integer, String> pieceTypeFromInt = new HashMap<Integer, String> (
+        Map.ofEntries (
+            Map.entry(Pieces.Pawn * Pieces.White, "P"),
+            Map.entry(Pieces.Rook * Pieces.White, "R"),
+            Map.entry(Pieces.Knight * Pieces.White, "N"),
+            Map.entry(Pieces.Bishop * Pieces.White, "B"),
+            Map.entry(Pieces.Queen * Pieces.White, "Q"),
+            Map.entry(Pieces.King * Pieces.White, "K"),
+            Map.entry(Pieces.Pawn * Pieces.Black, "p"),
+            Map.entry(Pieces.Rook * Pieces.Black, "r"),
+            Map.entry(Pieces.Knight * Pieces.Black, "n"),
+            Map.entry(Pieces.Bishop * Pieces.Black, "b"),
+            Map.entry(Pieces.Queen * Pieces.Black, "q"),
+            Map.entry(Pieces.King * Pieces.Black, "k")
+        )
+    );
 
 }

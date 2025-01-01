@@ -206,6 +206,26 @@ public class Pieces {
         return false;
     }
 
+    //public static boolean isPinnedPiece () {;}
+
+    public static boolean kingMovePutsKingInCheck (int color, int[] move, Board board) { // Debug
+        Board tempBoard = new Board(Board.positionToFEN(board.getPosition()));
+        tempBoard.setPosition(Game.updatePosition(tempBoard.getPosition(), move));
+        Moves.generatePseudoLegalMoves(tempBoard);
+        return isKingInCheck(color, tempBoard);
+    }
+
+    public static boolean isKingInCheck (int color, Board board) {
+        int kingIndex = (color == White) ? board.getPosition().indexOf(Pieces.King * Pieces.White) : board.getPosition().indexOf(Pieces.King * Pieces.Black);
+        ArrayList<ArrayList<Integer>> enemyMoves = (color == White) ? Moves.blackMoveList : Moves.whiteMoveList;
+        for (ArrayList<Integer> move : enemyMoves) {
+            if (move.get(1) == kingIndex) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * ranks = rows
      * files = columns
