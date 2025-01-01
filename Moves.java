@@ -8,28 +8,7 @@ public class Moves {
 
     private Moves () {} // Take out moves capturing the king
 
-    public static void splitPseudoLegalMovesByColor (Board board) { // DEBUG
-
-        whiteMoveList.clear();
-        blackMoveList.clear();
-
-        ArrayList<ArrayList<ArrayList<Integer>>> allMoves = generatePseudoLegalMoves(board);
-        System.out.println(allMoves);
-        for (int i = 0; i < allMoves.size(); i++) {
-            ArrayList<ArrayList<Integer>> pieceMoves = allMoves.get(i);
-            for (int j = 0; j < pieceMoves.size(); j++) {
-                int startingIndex = pieceMoves.get(j).get(0);
-                int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
-                if (colorUp == Pieces.White) {
-                    whiteMoveList.add(pieceMoves.get(j));
-                } else {
-                    blackMoveList.add(pieceMoves.get(j));
-                }
-            }
-        }
-    }
-
-    private static boolean isValidMove (int startingIndex, int targetIndex, int dirOffsetIndex, Board board) { // maybe make this more generally applicable
+    public static boolean isValidMove (int startingIndex, int targetIndex, int dirOffsetIndex, Board board) { // maybe make this more generally applicable
 
         if (targetIndex < 0 || targetIndex > 63) {return false;}
 
@@ -70,38 +49,26 @@ public class Moves {
         return Arrays.equals(testingDelta, validDelta);
     }
 
-    public static ArrayList<ArrayList<ArrayList<Integer>>> generatePseudoLegalMoves (Board board) {
+    public static void generatePseudoLegalMoves (Board board) {
         //boolean kingMoved = Game.kingMoved;
-        ArrayList<ArrayList<ArrayList<Integer>>> allMoves = new ArrayList<ArrayList<ArrayList<Integer>>>();
+
+        whiteMoveList.clear();
+        blackMoveList.clear();
+
         for (int i = 0; i < 64; i++) {
-            int colorUp = Pieces.sameColor(board.getPosition().get(i), Pieces.White) ? Pieces.White : Pieces.Black; 
-            boolean kingInCheck = Pieces.isKingInCheck(colorUp, board);
-            if (board.getPosition().get(i) == Pieces.Empty) {
+            int pieceAtIndex = board.getPosition().get(i);
+            if (Pieces.isEmpty(board.getPosition().get(i))) {
                 continue;
-            }
-            if (Pieces.isSlidingPiece(board.getPosition().get(i))) {
-                if (!kingInCheck && Moves.generateSlidingMoves(i, board).size() > 0) {
-                    allMoves.add(Moves.generateSlidingMoves(i, board));
-                }
-            } else if (Pieces.isPawn(board.getPosition().get(i))) {
-                if (!kingInCheck && Moves.generatePawnMoves(i, board).size() > 0) {
-                    allMoves.add(Moves.generatePawnMoves(i, board));
-                }
-                if (!kingInCheck && Moves.generateEnPassantMoves(i, board, Game.allMovesTaken).size() > 0) {
-                    System.out.println("En Passant Available");
-                    allMoves.add(Moves.generateEnPassantMoves(i, board, Game.allMovesTaken));
-                }
             } else if (Pieces.isKing(board.getPosition().get(i))) {
-                if (Moves.generateKingMoves(i, board).size() > 0) {
-                    allMoves.add(Moves.generateKingMoves(i, board));
-                }
+                generateKingMoves(i, board);
             } else if (Pieces.isKnight(board.getPosition().get(i))) {
-                if (!kingInCheck && Moves.generateKnightMoves(i, board).size() > 0) {
-                    allMoves.add(Moves.generateKnightMoves(i, board));
-                }
+                generateKnightMoves(i, board);
+            } else if (Pieces.isPawn(board.getPosition().get(i))) {
+                generatePawnMoves(i, board);
+            } else if (Pieces.isSlidingPiece(board.getPosition().get(i))) {
+                generateSlidingMoves(i, board);
             }
         }
-        return allMoves;
     }
 
     /**
@@ -118,13 +85,12 @@ public class Moves {
      *                              the moves, where the Integers in each ArrayList are 
      *                              the indexes (Starting Index, Ending Index)
      */
-    public static ArrayList<ArrayList<Integer>> generateSlidingMoves (int startingIndex, Board board) { // Account for pawns + test for castling & en passant + test queen + rook
+    public static void generateSlidingMoves (int startingIndex, Board board) { // Account for pawns + test for castling & en passant + test queen + rook
 
         int pieceAtIndex = board.getPosition().get(startingIndex);
         int startingDirIndex = (Pieces.isPieceType(pieceAtIndex, Pieces.Bishop)) ? 4 : 0; // moveDirOffsets for Bishop starts at 4 (Diagonal moves)
         int endingDirIndex = (Pieces.isPieceType(pieceAtIndex, Pieces.Rook)) ? 4 : 8; // moveDirOffsets for Rook ends at 4 (Orthagonal moves)
 
-        ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
         ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
@@ -141,23 +107,21 @@ public class Moves {
                 ArrayList<Integer> move = new ArrayList<Integer>();
                 move.add(startingIndex);
                 move.add(targetIndex);
-                moves.add(move);
+                colorList.add(move);
 
                 if (!Pieces.sameColor(board.getPosition().get(targetIndex), colorUp) && !Pieces.isEmpty(pieceAtTarget)) {
                     break;
                 }
             }
         }
-        return moves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generatePawnMoves (int startingIndex, Board board) { // double pushes, promotions
+    public static void generatePawnMoves (int startingIndex, Board board) { // double pushes, promotions
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
         int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
         int rank = startingIndex / 8;
 
-        ArrayList<ArrayList<Integer>> pawnMoves = new ArrayList<ArrayList<Integer>>();
         ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int i = 0; i < DirectionOffsets.dirOffsetsPawn.length; i++) {
@@ -170,11 +134,11 @@ public class Moves {
                 if (isValidMove(startingIndex, targetIndex, i, board)) {
                     if (i % 2 == 0) {
                         if (Pieces.isCapturable(targetIndex, colorUp, board)) {
-                            pawnMoves.add(move);
+                            colorList.add(move);
                         }
                     } else {
                         if (Pieces.isEmpty(board.getPosition().get(targetIndex))) {
-                            pawnMoves.add(move);
+                            colorList.add(move);
                         }
                     }
                 }
@@ -186,19 +150,16 @@ public class Moves {
                     doublePushMove.add(doublePushIndex);
                     if (isValidMove(startingIndex, doublePushIndex, i, board)) {
                         if (Pieces.isEmpty(board.getPosition().get(doublePushIndex))) {
-                            pawnMoves.add(doublePushMove);
+                            colorList.add(doublePushMove);
                         }
                     }
                 }
             }
 
         }
-        return pawnMoves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generateKnightMoves (int startingIndex, Board board) {
-
-        ArrayList<ArrayList<Integer>> knightMoves = new ArrayList<ArrayList<Integer>>();
+    public static void generateKnightMoves (int startingIndex, Board board) {
 
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
         ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
@@ -212,18 +173,13 @@ public class Moves {
 
             if (isValidMove(startingIndex, targetIndex, i, board)) {
                 if (!Pieces.sameColor(board.getPosition().get(targetIndex), colorUp) || Pieces.isEmpty(board.getPosition().get(targetIndex))) {
-                    knightMoves.add(move);
+                    colorList.add(move);
                 }
             }
         }
-
-        return knightMoves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generateKingMoves (int startingIndex, Board board) {
-
-        ArrayList<ArrayList<Integer>> kingMoves = new ArrayList<ArrayList<Integer>>();
-
+    public static void generateKingMoves (int startingIndex, Board board) {
         int colorUp = Pieces.sameColor(board.getPosition().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
         ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
@@ -233,17 +189,14 @@ public class Moves {
             ArrayList<Integer> move = new ArrayList<Integer>();
             move.add(startingIndex);
             move.add(targetIndex);
-
-            
+            int[] moveArray = {startingIndex, targetIndex};
 
             if (isValidMove(startingIndex, targetIndex, i, board)) {
                 if (!Pieces.sameColor(board.getPosition().get(targetIndex), colorUp) || Pieces.isEmpty(board.getPosition().get(targetIndex))) {
-                    kingMoves.add(move);
+                    colorList.add(move);
                 }
             }
         }
-
-        return kingMoves;
     }
 
     public static ArrayList<ArrayList<ArrayList<Integer>>> generateCastlingMoves (int startingIndex, Board board) { // To be implemented

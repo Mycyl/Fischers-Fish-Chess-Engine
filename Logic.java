@@ -34,11 +34,19 @@ public class Logic {
 
             //Moves.splitPseudoLegalMovesByColor(board);
             //System.out.println("Black Moves:  " + Moves.blackMoveList);
-
-            System.out.println("Is White King in Check: " + Pieces.isKingInCheck(Pieces.White, board));
-            System.out.println("Is Black King in Check: " + Pieces.isKingInCheck(Pieces.Black, board));
+            System.out.println("-----------------------------");
             System.out.println("Black Moves: " + Moves.blackMoveList);
+            System.out.println("-----------------------------");
+            System.out.println();
+            System.out.println("-----------------------------");
             System.out.println("White Moves: " + Moves.whiteMoveList);
+            System.out.println("-----------------------------");
+            System.out.println();
+            System.out.println("-----------------------------");
+            System.out.println("White King in Check: " + Pieces.isKingInCheck(Pieces.White, board));
+            System.out.println("Black King in Check: " + Pieces.isKingInCheck(Pieces.Black, board));
+            System.out.println("-----------------------------");
+            System.out.println("Reverse Ray List for White King: " + Pieces.reverseRayKingList(Pieces.White, board));
             
             // System.out.println("White King: " + Moves.generateCastlingMoves(Pieces.WHITE_KING_START_INDEX, board));
             // System.out.println("Black King: " + Moves.generateCastlingMoves(Pieces.BLACK_KING_START_INDEX, board));

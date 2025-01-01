@@ -208,6 +208,46 @@ public class Pieces {
 
     //public static boolean isPinnedPiece () {;}
 
+    public static ArrayList<ArrayList<Integer>> reverseRayKingList (int color, Board board) {
+        int kingIndex = (color == White) ? board.getPosition().indexOf(-King) : board.getPosition().indexOf(King);
+        ArrayList<ArrayList<Integer>> reverseRayKingList = new ArrayList<ArrayList<Integer>>();
+        for (int directionIndex = 0; directionIndex < DirectionOffsets.dirOffsetsReverseRay.length; directionIndex++) {
+            if (directionIndex / 8 == 0) {
+                for (int n = 0; n < Pieces.moveData(kingIndex)[directionIndex]; n++) {
+                    
+                    int targetIndex = kingIndex + DirectionOffsets.dirOffsetsSliding[directionIndex] * (n + 1);
+                    int pieceAtTarget = board.getPosition().get(targetIndex);
+
+                    if (n == Pieces.moveData(kingIndex)[directionIndex] - 1) {
+                        if (Pieces.sameColor(pieceAtTarget, color) && !Pieces.isEmpty(pieceAtTarget)) {
+                            reverseRayKingList.subList(reverseRayKingList.size() - Pieces.moveData(kingIndex)[directionIndex], reverseRayKingList.size()).clear();
+                            break;
+                        }
+                    }
+
+
+                    ArrayList<Integer> move = new ArrayList<Integer>();
+                    move.add(kingIndex);
+                    move.add(targetIndex);
+                    reverseRayKingList.add(move);
+
+                    if (!Pieces.sameColor(board.getPosition().get(targetIndex), color) && !Pieces.isEmpty(pieceAtTarget)) {
+                        break;
+                    }
+                }
+            } else {
+                ArrayList<Integer> move = new ArrayList<Integer>();
+                int targetIndex = kingIndex + DirectionOffsets.dirOffsetsReverseRay[directionIndex];
+                move.add(kingIndex);
+                move.add(targetIndex);
+                if (Moves.isValidMove(kingIndex, targetIndex, DirectionOffsets.dirOffsetsReverseRay[directionIndex], board)) {
+                    reverseRayKingList.add(move);
+                }
+            }
+        }
+        return reverseRayKingList;
+    }
+
     public static boolean kingMovePutsKingInCheck (int color, int[] move, Board board) { // Debug
         Board tempBoard = new Board(Board.positionToFEN(board.getPosition()));
         tempBoard.setPosition(Game.updatePosition(tempBoard.getPosition(), move));
@@ -216,10 +256,10 @@ public class Pieces {
     }
 
     public static boolean isKingInCheck (int color, Board board) {
-        int kingIndex = (color == White) ? board.getPosition().indexOf(Pieces.King * Pieces.White) : board.getPosition().indexOf(Pieces.King * Pieces.Black);
-        ArrayList<ArrayList<Integer>> enemyMoves = (color == White) ? Moves.blackMoveList : Moves.whiteMoveList;
-        for (ArrayList<Integer> move : enemyMoves) {
-            if (move.get(1) == kingIndex) {
+        int kingIndex = (color == White) ? board.getPosition().indexOf(-King) : board.getPosition().indexOf(King);
+        ArrayList<ArrayList<Integer>> oppositeMoveList = (color == White) ? Moves.blackMoveList : Moves.whiteMoveList;
+        for (ArrayList<Integer> Move : oppositeMoveList) {
+            if (Move.get(1) == kingIndex) {
                 return true;
             }
         }

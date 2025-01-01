@@ -37,6 +37,10 @@ public class DirectionOffsets {
 
     public static int[] dirOffsetsMoveCastleRook = {-2, 3};
 
+    public static int[] dirOffsetsReverseRay = {8, -8, -1, 1, 7, -7, 9, -9, -17, -15, -10, -6, 6, 10, 15, 17}; // first 8 indexes are the same as dirOffsetsSliding, the last 8 are the same as dirOffsetsKnight
+    // condition could be i / 8
+
+
     /**
      * A dictionary that holds the valid delta values for a knight piece
      * to move in a certain direction.
@@ -114,5 +118,9 @@ public class DirectionOffsets {
             Map.entry(Pieces.King * Pieces.Black, "k")
         )
     );
+
+    //public static Map<Integer, Integer> dirOffsetToPiece = new HashMap<Integer, Integer> (
+
+    //)
 
 }
