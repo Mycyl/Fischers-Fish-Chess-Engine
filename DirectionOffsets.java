@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ArrayList;
 
 public class DirectionOffsets {
     
@@ -118,6 +117,8 @@ public class DirectionOffsets {
             Map.entry(Pieces.King * Pieces.Black, "k")
         )
     );
+
+
 
     //public static Map<Integer, Integer> dirOffsetToPiece = new HashMap<Integer, Integer> (
 

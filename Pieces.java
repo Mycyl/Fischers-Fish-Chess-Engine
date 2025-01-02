@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Pieces {
 
@@ -108,8 +109,8 @@ public class Pieces {
      * <p>
      * @return          the piece is empty
      */
-    public static boolean isEmpty (int piece) {
-        return (piece == Empty);
+    public static boolean isEmpty (int index, Board board) {
+        return board.getPositionMap().get(index) == null;
     }
 
     /**
@@ -161,7 +162,7 @@ public class Pieces {
      * @return          the piece at the target index is capturable
      */
     public static boolean isCapturable (int index, int colorUp, Board board) {
-        if (!sameColor(board.getPosition().get(index), colorUp) && !isEmpty(board.getPosition().get(index))) {
+        if (!isEmpty(index, board) && !sameColor(board.getPositionMap().get(index), colorUp)) {
             return true;
         }
         return false;
@@ -172,7 +173,7 @@ public class Pieces {
         int endIndex = (kingIndex > rookIndex) ? 4 : 6;
         for (int i = startIndex; i < endIndex; i++) {
             int targetIndex = kingIndex + DirectionOffsets.dirOffsetsKingCastle[i];
-            if (board.getPosition().get(targetIndex) != Empty) {
+            if (isEmpty(board.getPositionMap().get(targetIndex), board)) {
                 return false;
             }
         }
@@ -206,57 +207,170 @@ public class Pieces {
         return false;
     }
 
-    //public static boolean isPinnedPiece () {;}
+    public static boolean isPinnedPiece (ArrayList<ArrayList<ArrayList<Integer>>> reverseRayKingList, int index, Board board) {
+        for (ArrayList<ArrayList<Integer>> directionList : reverseRayKingList) {
+            if (directionList.size() == 2) {
+                if (directionList.get(0).get(0) == index) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-    public static ArrayList<ArrayList<Integer>> reverseRayKingList (int color, Board board) {
-        int kingIndex = (color == White) ? board.getPosition().indexOf(-King) : board.getPosition().indexOf(King);
-        ArrayList<ArrayList<Integer>> reverseRayKingList = new ArrayList<ArrayList<Integer>>();
+    public static ArrayList<ArrayList<ArrayList<Integer>>> reverseRayKingList (int color, Board board) {
+
+        int kingIndex = (color == White) ? Board.indexFromPiece(-King) : Board.indexFromPiece(King);
+        ArrayList<ArrayList<ArrayList<Integer>>> reverseRayKingList = new ArrayList<ArrayList<ArrayList<Integer>>>();
+        int[] moveDataKing = moveData(kingIndex);
+
         for (int directionIndex = 0; directionIndex < DirectionOffsets.dirOffsetsReverseRay.length; directionIndex++) {
-            if (directionIndex / 8 == 0) {
-                for (int n = 0; n < Pieces.moveData(kingIndex)[directionIndex]; n++) {
-                    
-                    int targetIndex = kingIndex + DirectionOffsets.dirOffsetsSliding[directionIndex] * (n + 1);
-                    int pieceAtTarget = board.getPosition().get(targetIndex);
 
-                    if (n == Pieces.moveData(kingIndex)[directionIndex] - 1) {
-                        if (Pieces.sameColor(pieceAtTarget, color) && !Pieces.isEmpty(pieceAtTarget)) {
-                            reverseRayKingList.subList(reverseRayKingList.size() - Pieces.moveData(kingIndex)[directionIndex], reverseRayKingList.size()).clear();
-                            break;
+            ArrayList<ArrayList<Integer>> directionList = new ArrayList<ArrayList<Integer>>();
+
+            if (directionIndex / 8 == 0) {
+                // sliding pieces
+                int friendlyPiecesCounted = 0;
+                int emptySquaresCounted = 0;
+                boolean enemyPieceEncountered = false;
+
+                for (int n = 0; n < moveDataKing[directionIndex]; n++) {
+
+                    if (n == 0) { // do pawns and kings here TO DO
+
+                        int sevenIndex = (color == White) ? 5 : 4;
+                        int nineIndex = (color == White) ? 7 : 6;
+                        int targetIndexSeven = kingIndex + DirectionOffsets.dirOffsetsSliding[sevenIndex];
+                        int targetIndexNine = kingIndex + DirectionOffsets.dirOffsetsSliding[nineIndex];
+                        int pawnLookingFor = (color == White) ? Pawn : -Pawn;
+
+
+                        int targetIndex = kingIndex + DirectionOffsets.dirOffsetsSliding[directionIndex];
+                        if (!isEmpty(targetIndex, board)) {
+                            int pieceAtTarget = board.getPositionMap().get(targetIndex);
+                            if (sameColor(pieceAtTarget, color)) {
+                                friendlyPiecesCounted++;
+                            }
+                        }
+                    }
+                    
+                    if (friendlyPiecesCounted > 1) {
+                        directionList.clear();
+                        break;
+                    }
+
+                    int targetIndex = kingIndex + DirectionOffsets.dirOffsetsSliding[directionIndex] * (n + 1);
+
+                    if (!isEmpty(targetIndex, board)) {
+                        int pieceAtTarget = board.getPositionMap().get(targetIndex);
+                        if (sameColor(pieceAtTarget, color)) {
+                            friendlyPiecesCounted++;
                         }
                     }
 
-
                     ArrayList<Integer> move = new ArrayList<Integer>();
-                    move.add(kingIndex);
-                    move.add(targetIndex);
-                    reverseRayKingList.add(move);
 
-                    if (!Pieces.sameColor(board.getPosition().get(targetIndex), color) && !Pieces.isEmpty(pieceAtTarget)) {
+                    if (!isEmpty(targetIndex, board)) {
+                        int pieceAtTarget = board.getPositionMap().get(targetIndex);
+                        move.add(targetIndex);
+                        move.add(pieceAtTarget);
+                    } else {
+                        emptySquaresCounted++;
+                        move.add(targetIndex);
+                        move.add(Empty);
+                    }
+
+                    if (move.size() > 0) {
+                        directionList.add(move);
+                    }
+
+                    if (!isEmpty(targetIndex, board) && !sameColor(board.getPositionMap().get(targetIndex), color)) {
+                        enemyPieceEncountered = true;
+                        break;
+                    }
+
+                    if (emptySquaresCounted + friendlyPiecesCounted == moveDataKing[directionIndex] && !enemyPieceEncountered) {
+                        directionList.clear();
                         break;
                     }
                 }
-            } else {
+
+            } else { // NEEDS WORK
+
                 ArrayList<Integer> move = new ArrayList<Integer>();
                 int targetIndex = kingIndex + DirectionOffsets.dirOffsetsReverseRay[directionIndex];
-                move.add(kingIndex);
-                move.add(targetIndex);
-                if (Moves.isValidMove(kingIndex, targetIndex, DirectionOffsets.dirOffsetsReverseRay[directionIndex], board)) {
-                    reverseRayKingList.add(move);
+                if (!isEmpty(targetIndex, board)) {  
+                    int pieceAtTarget = board.getPositionMap().get(targetIndex);
+                    move.add(targetIndex);
+                    move.add(pieceAtTarget);
                 }
+                int dirOffsetIndexTesting = directionIndex - 8;
+
+                if (move.size() > 0 && isKnight(move.get(1))) {
+                    if (isValidMoveReverseRayKing(kingIndex, targetIndex, dirOffsetIndexTesting, board)) {
+                        if (!isEmpty(targetIndex, board) && !sameColor(board.getPositionMap().get(targetIndex), color)) {
+                            directionList.add(move);
+                        }
+                    }
+                }
+            }
+            if (directionList.size() > 0) {
+                reverseRayKingList.add(directionList);
             }
         }
         return reverseRayKingList;
     }
 
-    public static boolean kingMovePutsKingInCheck (int color, int[] move, Board board) { // Debug
-        Board tempBoard = new Board(Board.positionToFEN(board.getPosition()));
-        tempBoard.setPosition(Game.updatePosition(tempBoard.getPosition(), move));
+    public static boolean isValidMoveReverseRayKing (int startingIndex, int targetIndex, int dirOffsetIndex, Board board) {
+
+        if (targetIndex < 0 || targetIndex > 63) {return false;}
+
+        int pieceTesting = board.getPositionMap().get(targetIndex);
+        int colorUp = Pieces.sameColor(pieceTesting, Pieces.White) ? Pieces.White : Pieces.Black; 
+
+        int startingIndexFile = startingIndex % 8;
+        int startingIndexRank = startingIndex / 8;
+
+        int targetIndexFile = targetIndex % 8;
+        int targetIndexRank = targetIndex / 8;
+
+        int deltaFile = targetIndexFile - startingIndexFile;
+        int deltaRank = targetIndexRank - startingIndexRank;
+        int[] testingDelta = {deltaFile, deltaRank};
+
+        int offsetTesting;
+        int[] validDelta = {0, 0};
+
+        if (Pieces.isKnight(pieceTesting)) {
+
+            offsetTesting = DirectionOffsets.dirOffsetsKnight[dirOffsetIndex];
+            validDelta = DirectionOffsets.knightValidDeltaDictionary.get(offsetTesting);
+
+        } else if (Pieces.isPawn(pieceTesting)) {
+
+            offsetTesting = DirectionOffsets.dirOffsetsPawn[dirOffsetIndex];
+            int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
+            validDelta = DirectionOffsets.pawnValidDeltaDictionary.get(offsetTesting * dirMultiplier);
+
+        } else if (Pieces.isKing(pieceTesting)) {
+
+            offsetTesting = DirectionOffsets.dirOffsetsKing[dirOffsetIndex];
+            validDelta = DirectionOffsets.kingValidDeltaDictionary.get(offsetTesting);
+
+        }
+
+        return Arrays.equals(testingDelta, validDelta);
+    }
+
+    public static boolean kingMovePutsKingInCheck (int color, int[] move, Board board) { // OPTIMIZE
+        Board tempBoard = new Board(Board.positionToFEN(board.getPositionMap()));
+        tempBoard.setPosition(Game.updatePosition(tempBoard.getPositionMap(), move));
         Moves.generatePseudoLegalMoves(tempBoard);
         return isKingInCheck(color, tempBoard);
     }
 
-    public static boolean isKingInCheck (int color, Board board) {
-        int kingIndex = (color == White) ? board.getPosition().indexOf(-King) : board.getPosition().indexOf(King);
+    public static boolean isKingInCheck (int color, Board board) { // OPTIMIZE
+        int kingIndex = (color == White) ? Board.indexFromPiece(-King) : Board.indexFromPiece(King);
         ArrayList<ArrayList<Integer>> oppositeMoveList = (color == White) ? Moves.blackMoveList : Moves.whiteMoveList;
         for (ArrayList<Integer> Move : oppositeMoveList) {
             if (Move.get(1) == kingIndex) {

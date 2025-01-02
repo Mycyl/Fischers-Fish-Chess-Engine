@@ -64,23 +64,23 @@ public class Board {
      *                  which represents the color and type of 
      *                  the piece
      */
-    public ArrayList<Integer> getPosition () {
-        return position;
+    public Map<Integer, Integer> getPositionMap () {
+        return positionMap;
     }
 
-    public void setPosition (ArrayList<Integer> position) {
-        this.position = position;
+    public void setPosition (Map<Integer, Integer> positionMap) {
+        this.positionMap = positionMap;
     }
 
     public static int getIndexFromRankAndFile (int rank, int file) {
         return rank * 8 + file;
     }
 
-    public static String positionToFEN (ArrayList<Integer> position) {
+    public static String positionToFEN (Map<Integer, Integer> position) {
         StringBuilder FEN = new StringBuilder();
         int emptyCounter = 0;
         for (int i = 0; i < 64; i++) {
-            if (position.get(i) == Pieces.Empty) {
+            if (!positionMap.containsKey(i)) {
                 emptyCounter++;
             } else {
                 if (emptyCounter != 0) {
@@ -102,12 +102,25 @@ public class Board {
         return FEN.toString();
     }
 
+    public static int pieceFromIndex (int index) {
+        return positionMap.get(index);
+    }
 
-    // public static Map<Integer, Integer> positionMap = new HashMap<Integer, Integer> (
-    //     Map.ofEntries (
-    //         Map.entry()
-    //     )
-    // );
+    public static int indexFromPiece (int piece) { // apply a search algorithm
+        for (Map.Entry<Integer, Integer> entry : positionMap.entrySet()) {
+            if (entry.getValue() == piece) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
+    public static boolean pieceNotOnBoard (int piece) {
+        return (indexFromPiece(piece) == -1);
+    }
+
+
+    public static Map<Integer, Integer> positionMap = new HashMap<Integer, Integer> ();
 
     /**
      * Instantiation Method:
@@ -135,16 +148,17 @@ public class Board {
         String[] FENList = fenString.split(" ");
         String isolateFen = FENList[0];
         char[] fenCharacters = isolateFen.toCharArray();
+        int index = 0;
 
         for (char symbol : fenCharacters) {
             if (symbol != '/') {
                 if (Character.isDigit(symbol)) {
-                    for (int i = 0; i < Character.getNumericValue(symbol); i++) {
-                        position.add(Pieces.Empty);
-                    }
+                    index += Character.getNumericValue(symbol);
                 } else {
                     int whiteOrBlack = Pieces.isWhite(symbol) ? Pieces.White : Pieces.Black;
-                    position.add(pieceTypeFromFENMAP.get(Character.toLowerCase(symbol)) * whiteOrBlack);
+                    int piece = pieceTypeFromFENMAP.get(Character.toLowerCase(symbol)) * whiteOrBlack;
+                    positionMap.put(index, pieceTypeFromFENMAP.get(Character.toLowerCase(symbol)) * whiteOrBlack);
+                    index++;
                 }
             }
         }

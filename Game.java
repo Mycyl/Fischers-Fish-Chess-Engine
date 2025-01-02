@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Game {
     
@@ -9,12 +10,15 @@ public class Game {
         allMovesTaken.add(move);
     }
 
-    public static ArrayList<Integer> updatePosition (ArrayList<Integer> position, int[] move) {
+    public static Map<Integer, Integer> updatePosition (Map<Integer, Integer> positionMap, int[] move) {
         int startingIndex = move[0];
         int endingIndex = move[1];
-        position.set(endingIndex, position.get(startingIndex));
-        position.set(startingIndex, Pieces.Empty);
-        return position;
+        if(positionMap.containsKey(startingIndex)) {
+            int piece = positionMap.get(startingIndex);
+            positionMap.remove(startingIndex);
+            positionMap.put(endingIndex, piece);
+        }
+        return positionMap;
     }
 
     public static int[] getLastMove () {

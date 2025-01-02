@@ -7,8 +7,8 @@ public class Logic {
 
     public void start () {
         Scanner scan = new Scanner(System.in);
-        Board board = new Board(Board.getStartingFen());
-        System.out.println(board.getPosition());
+        Board board = new Board("3q4/8/4n3/2pP4/q1PKPP1r/2p5/P1n5/8");
+        System.out.println(board.getPositionMap());
         System.out.println();
         Moves.generatePseudoLegalMoves(board);
 
@@ -16,7 +16,7 @@ public class Logic {
         while (response != -1) {
             // System.out.println("White Moves:  " + Moves.whiteMoveList);
             // System.out.println("Black Moves:  " + Moves.blackMoveList);
-            System.out.println("FEN STRING: " + Board.positionToFEN(board.getPosition()));
+            System.out.println("FEN STRING: " + Board.positionToFEN(board.getPositionMap()));
             int[] move = new int[2];
             System.out.println();
             System.out.print("Enter a Starting Index: -1 to exit: ");
@@ -28,7 +28,7 @@ public class Logic {
             move[0] = response;
             move[1] = endingIndex;
             Game.addMove(move);
-            board.setPosition(Game.updatePosition(board.getPosition(), move));
+            board.setPosition(Game.updatePosition(board.getPositionMap(), move));
 
             Moves.generatePseudoLegalMoves(board);
 
@@ -53,7 +53,7 @@ public class Logic {
             //System.out.println("All possible moves: " + Moves.generatePseudoLegalMoves (board));
             // System.out.println("Psuedo Legal Moves Available: " + Game.moveCounter(Moves.generatePseudoLegalMoves(board)));
 
-            System.out.println(board.getPosition());
+            System.out.println(board.getPositionMap());
         }
 
 

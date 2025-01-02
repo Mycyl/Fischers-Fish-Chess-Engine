@@ -5,11 +5,18 @@
 - remove moves that capture the king
 
 Optimization Ideas:
-- Instead of looping over all indexes, keep track of the index of each piece
+- Instead of looping over all indexes, keep track of the index of each piece (DONE)
 - Instead of splitting each move from the move list into different colors, only append to the color lists (MIGHT BE FIXED)
 - Apply efficient search algorithms that search for the index
 - reverse ray 
 - remove moves that capture the king
+- Bitboards?
+
+To Do:
+- For reverse rays impliment pawns and kings
+- Implement isKingInCheck
+- Implement movePutsKingInCheck
+
 
 [52, 36]
 [10, 18]
