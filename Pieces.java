@@ -209,7 +209,7 @@ public class Pieces {
 
     public static boolean isPinnedPiece (ArrayList<ArrayList<ArrayList<Integer>>> reverseRayKingList, int index, Board board) {
         for (ArrayList<ArrayList<Integer>> directionList : reverseRayKingList) {
-            if (directionList.size() == 2) {
+            if (directionList.size() > 1) {
                 if (directionList.get(0).get(0) == index) {
                     return true;
                 }
@@ -236,24 +236,11 @@ public class Pieces {
 
                 for (int n = 0; n < moveDataKing[directionIndex]; n++) {
 
-                    if (n == 0) { // do pawns and kings here TO DO
+                    // pawns
+                    boolean checkingFirstSquareOfDir = (n == 0);
+                    int ninedirIndex = (color == White) ? 7 : 6;
+                    int sevenDirIndex = (color == White) ? 5 : 4;
 
-                        int sevenIndex = (color == White) ? 5 : 4;
-                        int nineIndex = (color == White) ? 7 : 6;
-                        int targetIndexSeven = kingIndex + DirectionOffsets.dirOffsetsSliding[sevenIndex];
-                        int targetIndexNine = kingIndex + DirectionOffsets.dirOffsetsSliding[nineIndex];
-                        int pawnLookingFor = (color == White) ? Pawn : -Pawn;
-
-
-                        int targetIndex = kingIndex + DirectionOffsets.dirOffsetsSliding[directionIndex];
-                        if (!isEmpty(targetIndex, board)) {
-                            int pieceAtTarget = board.getPositionMap().get(targetIndex);
-                            if (sameColor(pieceAtTarget, color)) {
-                                friendlyPiecesCounted++;
-                            }
-                        }
-                    }
-                    
                     if (friendlyPiecesCounted > 1) {
                         directionList.clear();
                         break;

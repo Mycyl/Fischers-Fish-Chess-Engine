@@ -7,7 +7,7 @@ public class Logic {
 
     public void start () {
         Scanner scan = new Scanner(System.in);
-        Board board = new Board("3q4/8/4n3/2pP4/q1PKPP1r/2p5/P1n5/8");
+        Board board = new Board("3q4/8/4n3/2pP4/3KPP1r/2p5/P1n5/8");
         System.out.println(board.getPositionMap());
         System.out.println();
         Moves.generatePseudoLegalMoves(board);
