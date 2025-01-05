@@ -7,7 +7,7 @@ public class Logic {
 
     public void start () {
         Scanner scan = new Scanner(System.in);
-        Board board = new Board("3q4/8/4n3/2pP4/3KPP1r/2p5/P1n5/8");
+        Board board = new Board("3q4/8/2pPp3/r1kKPP1r/2p5/3bn3/b7/8");
         System.out.println(board.getPositionMap());
         System.out.println();
         Moves.generatePseudoLegalMoves(board);
@@ -31,6 +31,7 @@ public class Logic {
             board.setPosition(Game.updatePosition(board.getPositionMap(), move));
 
             Moves.generatePseudoLegalMoves(board);
+            ReverseRay.updateReverseRayKingList(Pieces.White, board); // this needs to be run before generate moves
 
             //Moves.splitPseudoLegalMovesByColor(board);
             //System.out.println("Black Moves:  " + Moves.blackMoveList);
@@ -46,7 +47,8 @@ public class Logic {
             System.out.println("White King in Check: " + Pieces.isKingInCheck(Pieces.White, board));
             System.out.println("Black King in Check: " + Pieces.isKingInCheck(Pieces.Black, board));
             System.out.println("-----------------------------");
-            System.out.println("Reverse Ray List for White King: " + Pieces.reverseRayKingList(Pieces.White, board));
+            System.out.println("Reverse Ray List for White King: " + ReverseRay.reverseRayKingListWhite);
+            
             
             // System.out.println("White King: " + Moves.generateCastlingMoves(Pieces.WHITE_KING_START_INDEX, board));
             // System.out.println("Black King: " + Moves.generateCastlingMoves(Pieces.BLACK_KING_START_INDEX, board));

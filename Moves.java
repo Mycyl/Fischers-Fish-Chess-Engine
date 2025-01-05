@@ -4,11 +4,8 @@ import java.util.Set;
 
 public class Moves {
     
-    public static ArrayList<ArrayList<Integer>> whiteMoveList = new ArrayList<ArrayList<Integer>>();
-    public static ArrayList<ArrayList<Integer>> blackMoveList = new ArrayList<ArrayList<Integer>>();
-
-    public static ArrayList<ArrayList<Integer>> whiteMoveListTemp = new ArrayList<ArrayList<Integer>>(); // for looking at moves that put king in check
-    public static ArrayList<ArrayList<Integer>> blackMoveListTemp = new ArrayList<ArrayList<Integer>>(); // for looking at moves that put king in check
+    public static ArrayList<ArrayList<ArrayList<Integer>>> whiteMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
+    public static ArrayList<ArrayList<ArrayList<Integer>>> blackMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
 
     private Moves () {} // Take out moves capturing the king
 
@@ -59,10 +56,7 @@ public class Moves {
         whiteMoveList.clear();
         blackMoveList.clear();
 
-        whiteMoveListTemp.clear();
-        blackMoveListTemp.clear();
-
-        ArrayList<ArrayList<ArrayList<Integer>>> reverseRayListWhite = Pieces.reverseRayKingList(Pieces.White, board);
+        ArrayList<ArrayList<ArrayList<Integer>>> reverseRayListWhite = ReverseRay.reverseRayKingListWhite;
 
         for (int key: board.getPositionMap().keySet()) {
             int piece = board.getPositionMap().get(key);
@@ -101,7 +95,8 @@ public class Moves {
         int endingDirIndex = (Pieces.isPieceType(pieceAtIndex, Pieces.Rook)) ? 4 : 8; // moveDirOffsets for Rook ends at 4 (Orthagonal moves)
 
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
-        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
+        ArrayList<ArrayList<Integer>> slidingMoveList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<ArrayList<Integer>>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int directionIndex = startingDirIndex; directionIndex < endingDirIndex; directionIndex++) {
             for (int n = 0; n < Pieces.moveData(startingIndex)[directionIndex]; n++) {
@@ -115,7 +110,7 @@ public class Moves {
                 ArrayList<Integer> move = new ArrayList<Integer>();
                 move.add(startingIndex);
                 move.add(targetIndex);
-                colorList.add(move);
+                slidingMoveList.add(move);
 
                 if (!Pieces.isEmpty(targetIndex, board) && !Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp)) {
                     break;
@@ -123,6 +118,7 @@ public class Moves {
 
             }
         }
+        colorList.add(slidingMoveList);
     }
 
     public static void generatePawnMoves (int startingIndex, Board board) { // double pushes, promotions
@@ -131,7 +127,8 @@ public class Moves {
         int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
         int rank = startingIndex / 8;
 
-        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
+        ArrayList<ArrayList<Integer>> pawnMoveList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<ArrayList<Integer>>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int i = 0; i < DirectionOffsets.dirOffsetsPawn.length; i++) {
             
@@ -143,11 +140,11 @@ public class Moves {
                 if (isValidMove(startingIndex, targetIndex, i, board)) {
                     if (i % 2 == 0) {
                         if (Pieces.isCapturable(targetIndex, colorUp, board)) {
-                            colorList.add(move);
+                            pawnMoveList.add(move);
                         }
                     } else {
                         if (Pieces.isEmpty(targetIndex, board)) {
-                            colorList.add(move);
+                            pawnMoveList.add(move);
                         }
                     }
                 }
@@ -159,19 +156,20 @@ public class Moves {
                     doublePushMove.add(doublePushIndex);
                     if (isValidMove(startingIndex, doublePushIndex, i, board)) {
                         if (Pieces.isEmpty(doublePushIndex, board)) {
-                            colorList.add(doublePushMove);
+                            pawnMoveList.add(doublePushMove);
                         }
                     }
                 }
             }
-
         }
+        colorList.add(pawnMoveList);
     }
 
     public static void generateKnightMoves (int startingIndex, Board board) {
 
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
-        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
+        ArrayList<ArrayList<Integer>> knightMoves = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<ArrayList<Integer>>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int i = 0; i < DirectionOffsets.dirOffsetsKnight.length; i++) {
 
@@ -182,15 +180,17 @@ public class Moves {
 
             if (isValidMove(startingIndex, targetIndex, i, board)) {
                 if ((!Pieces.isEmpty(targetIndex, board) && !Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp)) || Pieces.isEmpty(targetIndex, board)) {
-                    colorList.add(move);
+                    knightMoves.add(move);
                 }
             }
         }   
+        colorList.add(knightMoves);
     }
 
     public static void generateKingMoves (int startingIndex, Board board) {
-        int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
-        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
+        int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
+        ArrayList<ArrayList<Integer>> kingMoves = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<ArrayList<Integer>>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
 
         for (int i = 0; i < DirectionOffsets.dirOffsetsKing.length; i++) {
 
@@ -203,17 +203,18 @@ public class Moves {
             if (board.getPositionMap().containsKey(targetIndex)) {
                 if (isValidMove(startingIndex, targetIndex, i, board)) {
                     if ((!Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp) || Pieces.isEmpty(targetIndex, board))) {
-                        colorList.add(move);
+                        kingMoves.add(move);
                     }
                 }
             }
         }
+        colorList.add(kingMoves);
     }
 
     public static ArrayList<ArrayList<ArrayList<Integer>>> generateCastlingMoves (int startingIndex, Board board) { // To be implemented
         ArrayList<ArrayList<ArrayList<Integer>>> castlingMoves = new ArrayList<ArrayList<ArrayList<Integer>>>();
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
-        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
+        ArrayList<ArrayList<ArrayList<Integer>>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
         boolean kingMoved = Pieces.kingMoved(Game.allMovesTaken, colorUp);
 
         if (kingMoved) {
@@ -266,7 +267,7 @@ public class Moves {
         ArrayList<ArrayList<Integer>> enPassantMoves = new ArrayList<ArrayList<Integer>>(); // test m
 
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
-        ArrayList<ArrayList<Integer>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
+        ArrayList<ArrayList<ArrayList<Integer>>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
         int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
         int rank = startingIndex / 8;
         int file = startingIndex % 8;

@@ -10,7 +10,7 @@ public class DirectionOffsets {
      * and diagonal offsets that would be applied to a piece's index to 
      * move it in a certain direction.
      */
-    public static int[] dirOffsetsSliding = {8, -8, -1, 1, 7, -7, 9, -9};
+    public static int[] dirOffsetsSliding = {8, -8, -1, 1, 7, -7, 9, -9}; // first 4 are orthogonal, last 4 are diagonal
 
     /**
      * A list witholding integer values that represent the offsets that 
@@ -118,6 +118,28 @@ public class DirectionOffsets {
         )
     );
 
+    public static Map<Integer, int[]> reverseRayKingDirPieceMap = new HashMap<Integer, int[]> (
+        Map.ofEntries (
+            Map.entry(8, new int[] {Pieces.Rook, Pieces.Queen}),
+            Map.entry(-8, new int[] {Pieces.Rook, Pieces.Queen}),
+            Map.entry(-1, new int[] {Pieces.Rook, Pieces.Queen}),
+            Map.entry(1, new int[] {Pieces.Rook, Pieces.Queen}),
+            Map.entry(7, new int[] {Pieces.Queen, Pieces.Bishop}),
+            Map.entry(-7, new int[] {Pieces.Queen, Pieces.Bishop}),
+            Map.entry(9, new int[] {Pieces.Queen, Pieces.Bishop}),
+            Map.entry(-9, new int[] {Pieces.Queen, Pieces.Bishop}),
+            Map.entry(-17, new int[] {Pieces.Knight}),
+            Map.entry(-15, new int[] {Pieces.Knight}),
+            Map.entry(-10, new int[] {Pieces.Knight}),
+            Map.entry(-6, new int[] {Pieces.Knight}),
+            Map.entry(6, new int[] {Pieces.Knight}),
+            Map.entry(10, new int[] {Pieces.Knight}),
+            Map.entry(15, new int[] {Pieces.Knight}),
+            Map.entry(17, new int[] {Pieces.Knight})
+        )
+    );
+
+    // 8, -8, -1, 1, 7, -7, 9, -9, -17, -15, -10, -6, 6, 10, 15, 17
 
 
     //public static Map<Integer, Integer> dirOffsetToPiece = new HashMap<Integer, Integer> (
