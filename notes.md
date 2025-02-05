@@ -26,3 +26,5 @@ To Do:
 [10, 17]
 [51, 35]
 Expected Outcome: [17, 44]
+
+apply black legalization

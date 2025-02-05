@@ -226,6 +226,7 @@ public class ReverseRay {
             int pieceTesting = board.getPositionMap().get(targetIndex);
             System.out.println("KingIndex: " + startingIndex);
             int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
+            if (Pieces.sameColor(pieceTesting, colorUp)) {return false;}
 
             int startingIndexFile = startingIndex % 8;
             int startingIndexRank = startingIndex / 8;

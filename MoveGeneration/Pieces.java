@@ -102,6 +102,10 @@ public class Pieces {
         return sameColor(piece, White);
     }
 
+    public static boolean moveIsKingCapture (int[] move, Board board) {
+        return !isEmpty(board.getPositionMap().get(move[1]), board) && isKing(board.getPositionMap().get(move[1]));
+    }
+
     /**
      * A method used to indicate whether the parameter (int piece) is empty
      * @param piece     the piece to be checked

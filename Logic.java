@@ -6,7 +6,7 @@ public class Logic {
 
     public void start () {
         Scanner scan = new Scanner(System.in);
-        Board board = new Board("rnb1kbnr/pp1ppppp/2p5/q7/4P3/8/PPPP1PPP/RNBQKBNR");
+        Board board = new Board("r1b1kbnr/pppppppp/8/q7/4P3/3n1N2/PPPP1PPP/RNBQKB1R");
         System.out.println(board.getPositionMap());
         System.out.println();
         Moves.generatePseudoLegalMoves(board);

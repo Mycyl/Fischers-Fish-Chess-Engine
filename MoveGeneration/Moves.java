@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class Moves {
     
     public static ArrayList<ArrayList<ArrayList<Integer>>> whiteMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
     public static ArrayList<ArrayList<ArrayList<Integer>>> blackMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
     public static ArrayList<ArrayList<ArrayList<Integer>>> discardList = new ArrayList<ArrayList<ArrayList<Integer>>>(); // To be implemented
+    public static ArrayList<Integer> discardIndexList = new ArrayList<Integer>(); // To be implemented
 
     private Moves () {} // Take out moves capturing the king
 
@@ -61,14 +61,12 @@ public class Moves {
         //ArrayList<String> list = new ArrayList<>(set)
 
         Map<Integer, Integer> positionMapCopy = new HashMap<>(board.getPositionMap()); 
-        System.out.println(positionMapCopy);
 
         for (int key : positionMapCopy.keySet()) { // Causing ConcurrentModificationException
             int piece = board.getPositionMap().get(key);
             if (Pieces.isEmpty(key, board)) {
                 continue;
             } else if (Pieces.isPawn(piece)) {
-                System.out.println(key);
                 generatePawnMoves(key, board);
             } else if (Pieces.isKnight(piece)) {
                 generateKnightMoves(key, board);
@@ -118,7 +116,6 @@ public class Moves {
                 move.add(targetIndex);
                 int[] moveArray = {startingIndex, targetIndex};
                 if (!Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {slidingMoveList.add(move);}
-                if (Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {System.out.println("Move ommited: " + move);}
 
                 if (!Pieces.isEmpty(targetIndex, board) && !Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp)) {
                     break;
@@ -151,12 +148,10 @@ public class Moves {
                         if (Pieces.isCapturable(targetIndex, colorUp, board) && !Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
                             pawnMoveList.add(move);
                         }
-                        if (Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {System.out.println("Move ommited: " + move);}
                     } else {
                         if (Pieces.isEmpty(targetIndex, board) && !Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
                             pawnMoveList.add(move);
                         }
-                        if (Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {System.out.println("Move ommited: " + move);}
                     }
                 }
             } else {
@@ -170,7 +165,6 @@ public class Moves {
                         if (Pieces.isEmpty(doublePushIndex, board) && !Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
                             pawnMoveList.add(doublePushMove);
                         }
-                        if (Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {System.out.println("Move ommited: " + move);}
                     }
                 }
             }
@@ -187,16 +181,20 @@ public class Moves {
         for (int i = 0; i < DirectionOffsets.dirOffsetsKnight.length; i++) {
 
             int targetIndex = startingIndex + DirectionOffsets.dirOffsetsKnight[i];
-            ArrayList<Integer> move = new ArrayList<Integer>();
-            move.add(startingIndex);
-            move.add(targetIndex);
             int[] moveArray = {startingIndex, targetIndex};
+            ArrayList<Integer> move = new ArrayList<Integer>();
 
             if (isValidMove(startingIndex, targetIndex, i, board)) {
-                if ((!Pieces.isEmpty(targetIndex, board) && !Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp)) || Pieces.isEmpty(targetIndex, board) && !Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
-                    knightMoves.add(move);
+                if ((!Pieces.isEmpty(targetIndex, board) && !Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp)) || Pieces.isEmpty(targetIndex, board)) {
+                    
+                    move.add(startingIndex);
+                    move.add(targetIndex);
+                    
+                    if (!Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
+                        knightMoves.add(move);
+                    }
+                    
                 }
-                if (Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {System.out.println("Move ommited: " + move);}
             }
         }   
         colorList.add(knightMoves);
@@ -218,7 +216,6 @@ public class Moves {
                 if (((!Pieces.isEmpty(targetIndex, board) && !Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp)) || Pieces.isEmpty(targetIndex, board)) && !Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
                     kingMoves.add(move);
                 }
-                if (Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {System.out.println("Move ommited: " + move + "Empty Piece: " + Pieces.isEmpty(targetIndex, board));}
             }
         }
         System.out.println(kingMoves);
