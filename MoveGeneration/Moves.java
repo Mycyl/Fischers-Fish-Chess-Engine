@@ -7,6 +7,7 @@ public class Moves {
     
     public static ArrayList<ArrayList<ArrayList<Integer>>> whiteMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
     public static ArrayList<ArrayList<ArrayList<Integer>>> blackMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
+    public static ArrayList<ArrayList<ArrayList<Integer>>> castlingMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>(); // To be implemented
     public static ArrayList<ArrayList<ArrayList<Integer>>> discardList = new ArrayList<ArrayList<ArrayList<Integer>>>(); // To be implemented
     public static ArrayList<Integer> discardIndexList = new ArrayList<Integer>(); // To be implemented
 
@@ -58,6 +59,7 @@ public class Moves {
 
         whiteMoveList.clear();
         blackMoveList.clear();
+        discardIndexList.clear();
         //ArrayList<String> list = new ArrayList<>(set)
 
         Map<Integer, Integer> positionMapCopy = new HashMap<>(board.getPositionMap()); 
@@ -68,6 +70,7 @@ public class Moves {
                 continue;
             } else if (Pieces.isPawn(piece)) {
                 generatePawnMoves(key, board);
+                if (Game.allMovesTaken.size() > 0) {generateEnPassantMoves(key, board, Game.allMovesTaken);}
             } else if (Pieces.isKnight(piece)) {
                 generateKnightMoves(key, board);
             } else if (Pieces.isKing(piece)) {
@@ -115,7 +118,8 @@ public class Moves {
                 move.add(startingIndex);
                 move.add(targetIndex);
                 int[] moveArray = {startingIndex, targetIndex};
-                if (!Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {slidingMoveList.add(move);}
+                boolean kingAttackingMove = !Pieces.isEmpty(targetIndex, board) && Pieces.isKing(board.getPositionMap().get(targetIndex));
+                if (!Legalization.movePutsKingInCheck(colorUp, moveArray, board) && !kingAttackingMove) {slidingMoveList.add(move);}
 
                 if (!Pieces.isEmpty(targetIndex, board) && !Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp)) {
                     break;
@@ -145,7 +149,8 @@ public class Moves {
                 int[] moveArray = {startingIndex, targetIndex};
                 if (isValidMove(startingIndex, targetIndex, i, board)) {
                     if (i % 2 == 0) {
-                        if (Pieces.isCapturable(targetIndex, colorUp, board) && !Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
+                        boolean kingAttackingMove = !Pieces.isEmpty(targetIndex, board) && Pieces.isKing(board.getPositionMap().get(targetIndex));
+                        if (Pieces.isCapturable(targetIndex, colorUp, board) && !Legalization.movePutsKingInCheck(colorUp, moveArray, board) && !kingAttackingMove) {
                             pawnMoveList.add(move);
                         }
                     } else {
@@ -189,8 +194,9 @@ public class Moves {
                     
                     move.add(startingIndex);
                     move.add(targetIndex);
+                    boolean kingAttackingMove = !Pieces.isEmpty(targetIndex, board) && Pieces.isKing(board.getPositionMap().get(targetIndex));
                     
-                    if (!Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
+                    if (!Legalization.movePutsKingInCheck(colorUp, moveArray, board) && !kingAttackingMove) {
                         knightMoves.add(move);
                     }
                     
@@ -212,7 +218,8 @@ public class Moves {
             move.add(startingIndex);
             move.add(targetIndex);
             int[] moveArray = {startingIndex, targetIndex};
-            if (isValidMove(startingIndex, targetIndex, i, board)) {
+            boolean kingAttackingMove = !Pieces.isEmpty(targetIndex, board) && Pieces.isKing(board.getPositionMap().get(targetIndex));
+            if (isValidMove(startingIndex, targetIndex, i, board) && !kingAttackingMove) {
                 if (((!Pieces.isEmpty(targetIndex, board) && !Pieces.sameColor(board.getPositionMap().get(targetIndex), colorUp)) || Pieces.isEmpty(targetIndex, board)) && !Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
                     kingMoves.add(move);
                 }
@@ -274,7 +281,7 @@ public class Moves {
         return castlingMoves;
     }
 
-    public static ArrayList<ArrayList<Integer>> generateEnPassantMoves (int startingIndex, Board board, ArrayList<int[]> allMovesTaken) { // To be implemented
+    public static void generateEnPassantMoves (int startingIndex, Board board, ArrayList<int[]> allMovesTaken) { // To be implemented
         ArrayList<ArrayList<Integer>> enPassantMoves = new ArrayList<ArrayList<Integer>>(); // test m
 
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
@@ -286,7 +293,7 @@ public class Moves {
         int triggerRank = DirectionOffsets.triggerRank.get(colorUp);
 
         if (rank != triggerRank) {
-            return enPassantMoves;
+            return;
         }
 
         int adjacentFileLeft = (colorUp == Pieces.White) ? file - 1 : file + 1;
@@ -305,7 +312,7 @@ public class Moves {
         if (adjacentFileRight < 8 && adjacentFileRight >= 0) {
             int index = Board.getIndexFromRankAndFile(triggerRank, adjacentFileRight);
             if (!Pieces.isEmpty(index, board) && Pieces.isPawn((board.getPositionMap().get(index)))) {
-                leftAttackingPawnIndex = Board.getIndexFromRankAndFile(triggerRank, adjacentFileRight);
+                rightAttackingPawnIndex = Board.getIndexFromRankAndFile(triggerRank, adjacentFileRight);
             }
         }
 
@@ -313,26 +320,35 @@ public class Moves {
         int rightAttackingPawnRank = rightAttackingPawnIndex / 8;
 
         // check if same rank
+        System.out.println(leftAttackingPawnIndex != -1 && leftAttackingPawnRank == triggerRank);
+        System.out.println(Game.isDoublePush(leftAttackingPawnIndex));
         if (leftAttackingPawnIndex != -1 && leftAttackingPawnRank == triggerRank && Game.isDoublePush(leftAttackingPawnIndex)) { // left is 9 right is 7
+            System.out.println("Left Attacking Pawn Index: " + leftAttackingPawnIndex);
             ArrayList<Integer> enPassantMove = new ArrayList<Integer>();
             enPassantMove.add(startingIndex);
             int targetIndex = startingIndex + DirectionOffsets.dirOffsetsPawn[0] * dirMultiplier;
             enPassantMove.add(targetIndex);
             if (isValidMove(startingIndex, targetIndex, 0, board)) {
                 enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
+                discardIndexList.add(leftAttackingPawnIndex);
             }
         }
 
         if (rightAttackingPawnIndex != -1 && rightAttackingPawnRank == triggerRank && Game.isDoublePush(rightAttackingPawnIndex)) {
             ArrayList<Integer> enPassantMove = new ArrayList<Integer>();
+            
             enPassantMove.add(startingIndex);
             int targetIndex = startingIndex + DirectionOffsets.dirOffsetsPawn[1] * dirMultiplier;
             enPassantMove.add(targetIndex);
             if (isValidMove(startingIndex, targetIndex, 1, board)) {
                 enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
+                discardIndexList.add(rightAttackingPawnIndex);
             }
         }
 
-        return enPassantMoves;
+        if (enPassantMoves.size() > 0) {
+            colorList.add(enPassantMoves);
+
+        }
     }
 }

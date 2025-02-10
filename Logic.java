@@ -6,7 +6,7 @@ public class Logic {
 
     public void start () {
         Scanner scan = new Scanner(System.in);
-        Board board = new Board("r1b1kbnr/pppppppp/8/q7/4P3/3n1N2/PPPP1PPP/RNBQKB1R");
+        Board board = new Board("8/3p4/8/4P3/8/8/8/8");
         System.out.println(board.getPositionMap());
         System.out.println();
         Moves.generatePseudoLegalMoves(board);
@@ -41,6 +41,8 @@ public class Logic {
             board.setPosition(Game.updatePosition(board.getPositionMap(), move));
             System.out.println(board.getPositionMap());
             
+            System.out.println(board.getPositionMap());
+            
 
             Moves.generatePseudoLegalMoves(board);
             // ReverseRay.updateReverseRayKingList(Pieces.White, board, false); // this needs to be run before generate moves
@@ -59,6 +61,7 @@ public class Logic {
             System.out.println("-----------------------------");
             // System.out.println("White King in Check: " + Legalization.isKingInCheck(Pieces.White, false));
             // System.out.println("Black King in Check: " + Legalization.isKingInCheck(Pieces.Black, false));
+            System.out.println("Discard List" + Moves.discardIndexList);
             System.out.println("-----------------------------");
             System.out.println("Reverse Ray List for White King: " + ReverseRay.reverseRayKingList(Pieces.White, board));
             System.out.println(board.getPositionMap());

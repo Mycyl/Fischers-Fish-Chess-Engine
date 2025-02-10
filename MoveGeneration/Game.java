@@ -18,6 +18,12 @@ public class Game {
             positionMap.remove(startingIndex);
             positionMap.put(endingIndex, piece);
         }
+        if (Moves.discardList.size() > 0) {
+            for (int i = 0; i < Moves.discardIndexList.size(); i++) {
+                int index = Moves.discardIndexList.get(i);
+                positionMap.remove(index);
+            }
+        }
         return positionMap;
     }
 

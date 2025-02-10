@@ -28,3 +28,4 @@ To Do:
 Expected Outcome: [17, 44]
 
 apply black legalization
+remove moves that capture the king

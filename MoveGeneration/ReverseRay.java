@@ -108,7 +108,7 @@ public class ReverseRay {
                     }
 
                 }
-                if (directionList.size() > 0) {
+                if (directionList.size() > 0 ) { // HSFHGSDHJGFGH
                     slidingMoves.add(directionList);
                 }
             }
@@ -128,7 +128,7 @@ public class ReverseRay {
                 ArrayList<Integer> move = new ArrayList<Integer>();
                 if (!Pieces.isEmpty(targetIndex, board)) {
                     int pieceTesting = board.getPositionMap().get(targetIndex);
-                    if (!Pieces.sameColor(pieceTesting, color)) {
+                    if (!Pieces.sameColor(pieceTesting, color) && Pieces.isKnight(pieceTesting)) {
                         move.add(targetIndex);
                         move.add(pieceTesting);
                     }
@@ -247,7 +247,6 @@ public class ReverseRay {
                 validDelta = DirectionOffsets.knightValidDeltaDictionary.get(offsetTesting);
 
             } else if (Pieces.isPawn(pieceTesting)) {
-
                 offsetTesting = DirectionOffsets.dirOffsetsPawn[dirOffsetIndex];
                 System.out.println(offsetTesting);
                 int dirMultiplier = (colorUp == Pieces.White) ? -1 : 1;
