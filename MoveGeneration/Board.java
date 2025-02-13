@@ -23,9 +23,11 @@ public class Board {
     private String fenString;
 
     /**
-     * The variable that represent the current position of the chess board 
-     * encoded with the variables specified in the Pieces class
+     * The variable that represents the position of the chess board as a
+     * HashMap of Integers that represents the color and type of piece at the index.
+     * The index is the key and the value is the piece type and color.
      */
+    public Map<Integer, Integer> positionMap = new HashMap<Integer, Integer> ();
 
     /**  
      * Constructor:
@@ -39,6 +41,12 @@ public class Board {
         parseFenString();
     }
 
+    /**
+     * Overloaded Constructor:
+     * The constructor that creates a Board object for chess board encoding from another Board object.
+     * <p>
+     * @param other The Board object to copy from.
+     */
     public Board(Board other) {
         // Deep copy of positionMap 
         this.positionMap = new HashMap<>(other.getPositionMap()); 
@@ -72,14 +80,33 @@ public class Board {
         return positionMap;
     }
 
+    /**
+     * Setter Method:
+     * <p>
+     * @param positionMap the position map to set
+     */
     public void setPosition (Map<Integer, Integer> positionMap) {
         this.positionMap = positionMap;
     }
 
+    /**
+     * Getter Method:
+     * Returns the index of the piece on the board given the rank and file.
+     * <p>
+     * @param rank the rank of the piece on the board (0-7)
+     * @param file the file of the piece on the board (0-7)
+     * @return the index of the piece on the board given the rank and file.
+     */
     public static int getIndexFromRankAndFile (int rank, int file) {
         return rank * 8 + file;
     }
 
+    /**
+     * Converts the position Map to a FEN String.
+     * <p>
+     * @param position the position Map to convert to a FEN String.
+     * @return the FEN String representation of the position Map.
+     */
     public String positionToFEN (Map<Integer, Integer> position) {
         StringBuilder FEN = new StringBuilder();
         int emptyCounter = 0;
@@ -106,10 +133,23 @@ public class Board {
         return FEN.toString();
     }
 
+    /**
+     * Getter Method:
+     * Returns the piece at the given index.
+     * <p>
+     * @param index the index of the piece to get.
+     * @return the piece at the given index.
+     */
     public int pieceFromIndex (int index) {
         return positionMap.get(index);
     }
 
+    /**
+     * Gets the index of the given piece.
+     * <p>
+     * @param piece the piece to get the index of.
+     * @return the index of the given piece.
+     */
     public int indexFromPiece (int piece) { // apply a search algorithm
         for (Map.Entry<Integer, Integer> entry : positionMap.entrySet()) {
             if (entry.getValue() == piece) {
@@ -119,6 +159,12 @@ public class Board {
         return -1;
     }
 
+    /**
+     * Getter Method:
+     * Returns the index of the white king.
+     * <p>
+     * @return the index of the white king.
+     */
     public int getIndexOfWhiteKing () {
         for (Map.Entry<Integer, Integer> entry : positionMap.entrySet()) {
             if (entry.getValue() == -Pieces.King) {
@@ -129,6 +175,11 @@ public class Board {
         return -1;
     }
 
+    /**
+     * Returns the index of the black king.
+     * <p>
+     * @return the index of the black king.
+     */
     public int getIndexOfBlackKing () {
         for (Map.Entry<Integer, Integer> entry : positionMap.entrySet()) {
             if (entry.getValue() == Pieces.King) {
@@ -140,12 +191,15 @@ public class Board {
         return -1;
     }
 
+    /**
+     * Returns true if the piece is not on the board.
+     * <p>
+     * @param piece the piece to check.
+     * @return true if the piece is not on the board.
+     */
     public boolean pieceNotOnBoard (int piece) {
         return (indexFromPiece(piece) == -1);
     }
-
-
-    public Map<Integer, Integer> positionMap = new HashMap<Integer, Integer> ();
 
     /**
      * Instantiation Method:

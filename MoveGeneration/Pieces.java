@@ -1,10 +1,25 @@
 import java.util.ArrayList;
 
+/**
+ * Pieces class represents the pieces on the chess board and their properties.
+ * @author Michael Madrid
+ * 
+ */
+
 public class Pieces {
 
+    /**
+     * Static variable indicating the starting index of the white king on the chess board
+     */
     public static final int WHITE_KING_START_INDEX = 60;
+    /**
+     * Static variable indicating the starting index of the black king on the chess board
+     */
     public static final int BLACK_KING_START_INDEX = 4;
 
+    /**
+     * Private constructor to prevent instantiation of the Pieces class
+     */
     private Pieces () {}
 
     /** 
@@ -98,10 +113,23 @@ public class Pieces {
         return (piece1 * color > 0);
     }
 
+    /**
+     * A method used to indicate whether the parameter (int piece) is white
+     * @param piece     the piece to be checked
+     * <p>
+     * @return          the piece is white
+     */
     public static boolean isWhite (int piece) {
         return sameColor(piece, White);
     }
 
+    /**
+     * A method used to indicate whether the move is a king capture move
+     * @param move      the move to be checked
+     * @param board     the current board state
+     * <p>
+     * @return          the move is a king capture move
+     */
     public static boolean moveIsKingCapture (int[] move, Board board) {
         return !isEmpty(board.getPositionMap().get(move[1]), board) && isKing(board.getPositionMap().get(move[1]));
     }
@@ -171,6 +199,14 @@ public class Pieces {
         return false;
     }
 
+    /**
+     * A method used to check if the king is free to move in the direction of the rook while caslting
+     * @param board     the current board state
+     * @param kingIndex the index of the king to be checked
+     * @param rookIndex the index of the rook to be checked
+     * <p>
+     * @return          the king is free to move in the direction of the rook while castling
+     */
     public static boolean emptyBetween (Board board, int kingIndex, int rookIndex) {
         int startIndex = (kingIndex > rookIndex) ? 1 : 4;
         int endIndex = (kingIndex > rookIndex) ? 4 : 6;
@@ -183,6 +219,13 @@ public class Pieces {
         return true;
     }
 
+    /**
+     * A method used to check if the king has moved during the game
+     * @param allMovesTaken  the list of all moves taken during the game
+     * @param color         the color of the king to be checked
+     * <p>
+     * @return          the king has moved during the game
+     */
     public static boolean kingMoved (ArrayList<int[]> allMovesTaken, int color) { // allMovesTaken [[original, new], [original, new], [original, new]]
         for (int[] move : allMovesTaken) {
             if (color == White && move[0] == WHITE_KING_START_INDEX) {
@@ -194,6 +237,13 @@ public class Pieces {
         return false;
     }
 
+    /**
+     * A method used to check if the rook has moved during the game
+     * @param allMovesTaken  the list of all moves taken during the game
+     * @param index        the index of the rook to be checked
+     * <p>
+     * @return          the rook has moved during the game
+     */
     public static boolean rookMoved (ArrayList<int[]> allMovesTaken, int index) {
         for (int[] move : allMovesTaken) {
             if (move[0] == index) {
@@ -203,6 +253,16 @@ public class Pieces {
         return false;
     }
 
+    /**
+     * A method used to check if the castling move is available for the king and rook at the specified indices
+     * @param rookMoved     the rook has moved during the game (true) or not (false)
+     * @param kingMoved     the king has moved during the game (true) or not (false)
+     * @param kingIndex     the index of the king to be checked
+     * @param rookIndex     the index of the rook to be checked
+     * @param board         the current board state
+     * <p>
+     * @return              the castling move is available for the king and rook at the specified indices
+     */
     public static boolean castlingAvailable (boolean rookMoved, boolean kingMoved, int kingIndex, int rookIndex, Board board) { // check if the rook is in the right position to castle
         if (!rookMoved && !kingMoved && emptyBetween(board, kingIndex, rookIndex)) { // make legal not pseudo legal
             return true;
@@ -210,6 +270,14 @@ public class Pieces {
         return false;
     }
 
+    /**
+     * A method used to check if the piece at the specified index is pinned to the king
+     * @param reverseRayKingList       the list of all reverse rays from the king to the piece at the specified index
+     * @param index                    the index of the piece to be checked
+     * @param board                    the current board state
+     * <p>
+     * @return                         the piece at the specified index is pinned to the king
+     */
     public static boolean isPinnedPiece (ArrayList<ArrayList<ArrayList<Integer>>> reverseRayKingList, int index, Board board) {
         for (ArrayList<ArrayList<Integer>> directionList : reverseRayKingList) {
             if (directionList.size() > 1) {
@@ -218,22 +286,21 @@ public class Pieces {
                 }
             }
         }
-        return false;
+        return false; // NEEDS TO BE APPLIED AND TESTED
     }
 
-    public static boolean kingMovePutsKingInCheck (int color, int[] move, Board board) { // OPTIMIZE
-        Board tempBoard = new Board(board.positionToFEN(board.getPositionMap()));
-        tempBoard.setPosition(Game.updatePosition(tempBoard.getPositionMap(), move));
-        Moves.generatePseudoLegalMoves(tempBoard);
-        return isKingInCheck(color, tempBoard);
-    }
-
-    public static boolean isKingInCheck (int color, Board board) { // OPTIMIZE
-        int kingIndex = (color == White) ? board.indexFromPiece(-King) : board.indexFromPiece(King);
-        ArrayList<ArrayList<ArrayList<Integer>>> oppositeMoveList = (color == White) ? Moves.blackMoveList : Moves.whiteMoveList;
-        for (ArrayList<ArrayList<Integer>> Piece : oppositeMoveList){
-            for (ArrayList<Integer> Move : Piece) {
-                if (Move.get(1) == kingIndex) {
+    /**
+     * A method used to check if the move is an en passant move
+     * @param color    the color of the piece to be checked
+     * @param move     the move to be checked
+     * @param board    the current board state
+     * <p>
+     * @return          the move is an en passant move
+     */
+    public static boolean isEnPassantMove (int color, int[] move, Board board) { // OPTIMIZE
+        if (Moves.enPassantMoveList.size() > 0) {
+            for (ArrayList<Integer> moveList : Moves.enPassantMoveList) { // search algorithm
+                if (moveList.get(0) == move[0] && moveList.get(1) == move[1]) {
                     return true;
                 }
             }

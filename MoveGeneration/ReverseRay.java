@@ -1,10 +1,27 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Reverse ray is the process of checking if a piece is attacking the king. 
+ * This is done by checking if the piece is in the same direction as the king and 
+ * if there are no pieces blocking the path.
+ * @author Michael Madrid
+ * 
+ */
+
 public class ReverseRay {
 
+        /**
+         * Private constructor to prevent instantiation.
+         */
         private ReverseRay() {}
 
+        /**
+         * Checks if a piece is in the list.
+         * @param piece the piece to check.
+         * @param list the list to check.
+         * @return true if the piece is in the list, false otherwise.
+         */
         private static boolean inList (int piece, int[] list) {
             for (int i = 0; i < list.length; i++) {
                 if (list[i] == piece) {
@@ -14,6 +31,12 @@ public class ReverseRay {
             return false;
         }
 
+        /**
+         * Generates a list of all pieces that are attacking the king.
+         * @param color the color of the king.
+         * @param board the board to check.
+         * @return a list of all pieces that are attacking the king.
+         */
         public static ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> reverseRayKingList (int color, Board board) { // maybe split up the method into checking for orthogonal and diagonal pieces
 
             ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> reverseRayKingList = new ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>>();
@@ -39,6 +62,12 @@ public class ReverseRay {
             return reverseRayKingList;
         }
 
+        /**
+         * Generates a list of all pieces that are attacking the king in a sliding direction.
+         * @param color the color of the king.
+         * @param board the board to check.
+         * @return a list of all pieces that are attacking the king in a sliding direction.
+         */
         private static ArrayList<ArrayList<ArrayList<Integer>>> generateSlidingReverseRay(int color, Board board) {
 
             int kingIndex = (color == Pieces.White) ? board.getIndexOfWhiteKing() : board.getIndexOfBlackKing();
@@ -108,13 +137,19 @@ public class ReverseRay {
                     }
 
                 }
-                if (directionList.size() > 0 ) { // HSFHGSDHJGFGH
+                if (directionList.size() > 0 ) {
                     slidingMoves.add(directionList);
                 }
             }
             return slidingMoves;
         }
 
+        /**
+         * Generates a list of all pieces that are attacking the king in a knight direction.
+         * @param color the color of the king.
+         * @param board the board to check.
+         * @return a list of all pieces that are attacking the king in a knight direction.
+         */
         private static ArrayList<ArrayList<ArrayList<Integer>>> generateKnightReverseRay(int color, Board board) {
 
             int kingIndex = (color == Pieces.White) ? board.getIndexOfWhiteKing() : board.getIndexOfBlackKing();
@@ -145,6 +180,12 @@ public class ReverseRay {
 
         }
 
+        /**
+         * Generates a list of all pieces that are attacking the king in a pawn direction.
+         * @param color the color of the king.
+         * @param board the board to check.
+         * @return a list of all pieces that are attacking the king in a pawn direction.
+         */
         private static ArrayList<ArrayList<ArrayList<Integer>>> generatePawnReverseRay(int color, Board board) {
 
             int kingIndex = (color == Pieces.White) ? board.indexFromPiece(-Pieces.King) : board.indexFromPiece(Pieces.King);
@@ -191,6 +232,12 @@ public class ReverseRay {
 
         }
 
+        /**
+         * Generates a list of all pieces that are attacking the king in a king direction.
+         * @param color the color of the king.
+         * @param board the board to check.
+         * @return a list of all pieces that are attacking the king in a king direction.
+         */
         private static ArrayList<ArrayList<ArrayList<Integer>>> generateKingReverseRay(int color, Board board) {
             
             int kingIndex = (color == Pieces.White) ? board.getIndexOfWhiteKing() : board.getIndexOfBlackKing();
@@ -219,6 +266,14 @@ public class ReverseRay {
             return kingReverseRay;
         }
 
+        /**
+         * Checks if a move is valid for the reverse ray.
+         * @param startingIndex the starting index of the piece.
+         * @param targetIndex the target index of the piece.
+         * @param dirOffsetIndex the direction offset index.
+         * @param board the board to check.
+         * @return true if the move is valid, false otherwise.
+         */
         public static boolean isValidMoveReverseRayKing (int startingIndex, int targetIndex, int dirOffsetIndex, Board board) {
 
             if (targetIndex < 0 || targetIndex > 63) {return false;}

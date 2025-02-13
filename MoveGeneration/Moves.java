@@ -3,16 +3,59 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Moves is the class that handles the generation of legal moves for the chess algorithm.
+ * Moves takes methods built in other classes to generate pseudo legal moves and then legalizes them.
+ * @author Michael Madrid
+ * 
+ */
+
 public class Moves {
     
+    /**
+     * whiteMoveList features the legal moves excluding castling and *en passant for white
+     */
     public static ArrayList<ArrayList<ArrayList<Integer>>> whiteMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
+    /**
+     * blackMoveList features the legal moves excluding castling and *en passant for black
+     */
     public static ArrayList<ArrayList<ArrayList<Integer>>> blackMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
+    /**
+     * castlingMoveList features the legal castling moves for both white and black
+     */
     public static ArrayList<ArrayList<ArrayList<Integer>>> castlingMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>(); // To be implemented
+    /**
+     * discardList features the pieces that are discarded from the board after an *en passant move
+     */
     public static ArrayList<ArrayList<ArrayList<Integer>>> discardList = new ArrayList<ArrayList<ArrayList<Integer>>>(); // To be implemented
+    /**
+     * discardIndexList features the indexes of the pieces that are discarded from the board after an *en passant move
+     */
     public static ArrayList<Integer> discardIndexList = new ArrayList<Integer>(); // To be implemented
+    /**
+     * enPassantMoveList features the legal *en passant moves for both white and black
+     */
+    public static ArrayList<ArrayList<Integer>> enPassantMoveList = new ArrayList<ArrayList<Integer>>(); // To be implemented
 
-    private Moves () {} // Take out moves capturing the king
+    /**
+     * Constructor is made private to prevent instantiation of the Moves class.
+     */
+    private Moves () {} 
 
+    /**
+     * isValidMove checks if the move is valid (doesn't move in an unwanted way) for the piece at the starting index.
+     * @param startingIndex the index of the piece to generate moves for.
+     * @param targetIndex the index of the target square.
+     * @param dirOffsetIndex the index of the direction offset.
+     * @param board the current board state.
+     * @return true if the move is valid, false otherwise.
+     * @see DirectionOffsets#dirOffsetsKnight
+     * @see DirectionOffsets#dirOffsetsPawn
+     * @see DirectionOffsets#dirOffsetsKing
+     * @see DirectionOffsets#knightValidDeltaDictionary
+     * @see DirectionOffsets#pawnValidDeltaDictionary
+     * @see DirectionOffsets#kingValidDeltaDictionary
+     */
     public static boolean isValidMove (int startingIndex, int targetIndex, int dirOffsetIndex, Board board) {
 
         if (targetIndex < 0 || targetIndex > 63) {return false;}
@@ -54,12 +97,19 @@ public class Moves {
         return Arrays.equals(testingDelta, validDelta);
     }
 
+    /**
+     * generatePseudoLegalMoves generates pseudo legal moves for all pieces on the board.
+     * @param board the current board state.
+     * @see Board#getPositionMap()
+     * @see Pieces#isEmpty(int, Board)
+     */
     public static void generatePseudoLegalMoves (Board board) { // When this is called in king move puts king in check it is adding onto the possible moves in black and white list, create a new black and white list
         //boolean kingMoved = Game.kingMoved;
 
         whiteMoveList.clear();
         blackMoveList.clear();
         discardIndexList.clear();
+        enPassantMoveList.clear();
         //ArrayList<String> list = new ArrayList<>(set)
 
         Map<Integer, Integer> positionMapCopy = new HashMap<>(board.getPositionMap()); 
@@ -130,6 +180,21 @@ public class Moves {
         colorList.add(slidingMoveList);
     }
 
+    /**
+     * Generates legal pawn moves for the piece at the specified index on the board.
+     * @see                         Pieces#isPieceType(int, int)
+     * @see                         Pieces#sameColor(int, int)
+     * @see                         Board#getPosition()
+     * @see                         DirectionOffsets#dirOffsetsPawn
+     * <p>
+     * @param startingIndex         the index of the piece to generate moves for
+     * @param board                 the current board state
+     * @return                      an ArrayList of ArrayLists of Integers representing
+     *                              the moves, where the Integers in each ArrayList are
+     *                              the indexes (Starting Index, Ending Index)
+     * @see                         Legalization#movePutsKingInCheck(int, int[], Board)
+     * 
+     */
     public static void generatePawnMoves (int startingIndex, Board board) { // double pushes, promotions
 
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
@@ -177,6 +242,19 @@ public class Moves {
         colorList.add(pawnMoveList);
     }
 
+    /**
+     * Generates legal knight moves for the piece at the specified index on the board.
+     * @see                         Pieces#isPieceType(int, int)
+     * @see                         Pieces#sameColor(int, int)
+     * @see                         Board#getPosition()
+     * @see                         DirectionOffsets#dirOffsetsKnight
+     * <p>
+     * @param startingIndex         the index of the piece to generate moves for
+     * @param board                 the current board state
+     * @return                      an ArrayList of ArrayLists of Integers representing
+     *                              the moves, where the Integers in each ArrayList are
+     *                              the indexes (Starting Index, Ending Index)
+     */
     public static void generateKnightMoves (int startingIndex, Board board) {
 
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black; 
@@ -206,6 +284,19 @@ public class Moves {
         colorList.add(knightMoves);
     }
 
+    /**
+     * Generates legal king moves for the piece at the specified index on the board.
+     * @see                         Pieces#isPieceType(int, int)
+     * @see                         Pieces#sameColor(int, int)
+     * @see                         Board#getPosition()
+     * @see                         DirectionOffsets#dirOffsetsKing
+     * <p>
+     * @param startingIndex         the index of the piece to generate moves for
+     * @param board                 the current board state
+     * @return                      an ArrayList of ArrayLists of Integers representing
+     *                              the moves, where the Integers in each ArrayList are
+     *                              the indexes (Starting Index, Ending Index)
+     */
     public static void generateKingMoves (int startingIndex, Board board) {
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
         ArrayList<ArrayList<Integer>> kingMoves = new ArrayList<ArrayList<Integer>>();
@@ -229,6 +320,21 @@ public class Moves {
         colorList.add(kingMoves);
     }
 
+    /**
+     * Generates legal castling moves for the piece at the specified index on the board.
+     * @see                         Pieces#isPieceType(int, int)
+     * @see                         Pieces#sameColor(int, int)
+     * @see                         Board#getPosition()
+     * @see                         DirectionOffsets#dirOffsetsKingCastle
+     * @see                         DirectionOffsets#dirOffsetsMoveCastleKing
+     * @see                         DirectionOffsets#dirOffsetsMoveCastleRook
+     * <p>
+     * @param startingIndex         the index of the piece to generate moves for
+     * @param board                 the current board state
+     * @return                      an ArrayList of ArrayLists of Integers representing
+     *                              the moves, where the Integers in each ArrayList are
+     *                              the indexes (Starting Index, Ending Index)
+     */
     public static ArrayList<ArrayList<ArrayList<Integer>>> generateCastlingMoves (int startingIndex, Board board) { // To be implemented
         ArrayList<ArrayList<ArrayList<Integer>>> castlingMoves = new ArrayList<ArrayList<ArrayList<Integer>>>();
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
@@ -281,6 +387,20 @@ public class Moves {
         return castlingMoves;
     }
 
+    /**
+     * Generates legal en passant moves for the piece at the specified index on the board.
+     * @see                         Pieces#isPieceType(int, int)
+     * @see                         Pieces#sameColor(int, int)
+     * @see                         Board#getPosition()
+     * @see                         DirectionOffsets#dirOffsetsPawn
+     * @see                         DirectionOffsets#triggerRank
+     * <p>
+     * @param startingIndex         the index of the piece to generate moves for
+     * @param board                 the current board state
+     * @return                      an ArrayList of ArrayLists of Integers representing
+     *                              the moves, where the Integers in each ArrayList are
+     *                              the indexes (Starting Index, Ending Index)
+     */
     public static void generateEnPassantMoves (int startingIndex, Board board, ArrayList<int[]> allMovesTaken) { // To be implemented
         ArrayList<ArrayList<Integer>> enPassantMoves = new ArrayList<ArrayList<Integer>>(); // test m
 

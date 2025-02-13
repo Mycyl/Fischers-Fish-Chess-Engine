@@ -1,8 +1,16 @@
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Direction Offsets help aid other classes in calculations pertaining to move generation
+ * @author Michael Madrid
+ */
+
 public class DirectionOffsets {
     
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private DirectionOffsets() {}
 
     /**
@@ -30,15 +38,29 @@ public class DirectionOffsets {
      */
     public static int[] dirOffsetsKing = {-9, -8, -7, -1, 1, 7, 8, 9};
 
-    public static int[] dirOffsetsKingCastle = {-4, -3, -2, -1, 1, 2, 3}; // The first and last offsets are the rook's position, the ones in between are the pieces in between
+    /**
+     * A list witholding integer values that represent the offsets that
+     * would be applied to a king's index to move it in a certain direction
+     * for castling. The first and last offsets are the rook's position, the ones in between are the pieces in between.
+     * Used to check the pieces in between the king and the rook for castling.
+     */
+    public static int[] dirOffsetsKingCastle = {-4, -3, -2, -1, 1, 2, 3};
 
+    /**
+     * The offsets that would be applied to a king's index to move it in a certain direction for castling.
+     */
     public static int[] dirOffsetsMoveCastleKing = {2, -2};
 
+    /**
+     * The offsets that would be applied to a rook's index to move it in a certain direction for castling.
+     */
     public static int[] dirOffsetsMoveCastleRook = {-2, 3};
 
-    public static int[] dirOffsetsReverseRay = {8, -8, -1, 1, 7, -7, 9, -9, -17, -15, -10, -6, 6, 10, 15, 17}; // first 8 indexes are the same as dirOffsetsSliding, the last 8 are the same as dirOffsetsKnight
-    // condition could be i / 8
-
+    /**
+     * A list witholding integer values that represent the offsets that would be applied to a king's index to move it in a certain direction for reverse ray.
+     * The first 8 indexes are the same as dirOffsetsSliding, the last 8 are the same as dirOffsetsKnight.
+     */
+    public static int[] dirOffsetsReverseRay = {8, -8, -1, 1, 7, -7, 9, -9, -17, -15, -10, -6, 6, 10, 15, 17}; 
 
     /**
      * A dictionary that holds the valid delta values for a knight piece
@@ -60,6 +82,12 @@ public class DirectionOffsets {
         )
     );
 
+    /**
+     * A dictionary that holds the valid delta values for a pawn piece to move in a certain direction.
+     * <p>
+     * Key: The offset value from dirOffsetsPawn or dirOffsetsKingCastle
+     * Value: The valid delta values for the pawn piece to move in a certain direction [deltaFile, deltaRank]
+     */
     public static Map<Integer, int[]> pawnValidDeltaDictionary = new HashMap<Integer, int[]> (
         Map.ofEntries (
             Map.entry(-16, new int[] {0, -2}),
@@ -73,6 +101,12 @@ public class DirectionOffsets {
         )
     );
 
+    /**
+     * A dictionary that holds the valid delta values for a king piece to move in a certain direction.
+     * <p>
+     * Key: The offset value from dirOffsetsKing
+     * Value: The valid delta values for the king piece to move in a certain direction [deltaFile, deltaRank]
+     */
     public static Map<Integer, int[]> kingValidDeltaDictionary = new HashMap<Integer, int[]> (
         Map.ofEntries (
             Map.entry(-9, new int[] {-1, -1}),
@@ -86,6 +120,12 @@ public class DirectionOffsets {
         )
     );
 
+    /**
+     * A dictionary that holds the starting rank for a pawn piece.
+     * <p>
+     * Key: The color of the pawn piece (Pieces.White or Pieces.Black)
+     * Value: The starting rank for the pawn piece (1 or 6)
+     */
     public static Map<Integer, Integer> startingRankPawn = new HashMap<Integer, Integer> (
         Map.ofEntries (
             Map.entry(Pieces.Black, 1),
@@ -93,6 +133,12 @@ public class DirectionOffsets {
         )
     );
 
+    /**
+     * A dictionary that holds the rank for a pawn piece to capture En Passant.
+     * <p>
+     * Key: The color of the pawn piece (Pieces.White or Pieces.Black)
+     * Value: The rank for the pawn piece to capture En Passant (4 or 5)
+     */
     public static Map<Integer, Integer> triggerRank = new HashMap<Integer, Integer> (
         Map.ofEntries (
             Map.entry(Pieces.Black, 4),
@@ -100,6 +146,12 @@ public class DirectionOffsets {
         )
     );
 
+    /**
+     * A dictionary that holds the piece type from an integer value.
+     * <p>
+     * Key: The integer value of the piece type (Pieces.Pawn * Pieces.White, Pieces.Rook * Pieces.White, etc.)
+     * Value: The string value of the piece type ("P", "R", "N", "B", "Q", "K", "p", "r", "n", "b", "q", "k")
+     */
     public static Map<Integer, String> pieceTypeFromInt = new HashMap<Integer, String> (
         Map.ofEntries (
             Map.entry(Pieces.Pawn * Pieces.White, "P"),
@@ -117,6 +169,12 @@ public class DirectionOffsets {
         )
     );
 
+    /**
+     * A dictionary that relates the direction offset to the piece type that can move in that direction.
+     * <p>
+     * Key: The direction offset from dirOffsetsSliding or dirOffsetsKnight
+     * Value: The piece type that can move in that direction (Pieces.Rook, Pieces.Bishop, Pieces.Knight, Pieces.Queen)
+     */
     public static Map<Integer, int[]> reverseRayKingDirPieceMap = new HashMap<Integer, int[]> (
         Map.ofEntries (
             Map.entry(8, new int[] {Pieces.Rook, Pieces.Queen}),
@@ -137,12 +195,5 @@ public class DirectionOffsets {
             Map.entry(17, new int[] {Pieces.Knight})
         )
     );
-
-    // 8, -8, -1, 1, 7, -7, 9, -9, -17, -15, -10, -6, 6, 10, 15, 17
-
-
-    //public static Map<Integer, Integer> dirOffsetToPiece = new HashMap<Integer, Integer> (
-
-    //)
 
 }
