@@ -453,8 +453,12 @@ public class Moves {
             enPassantMove.add(targetIndex);
             int[] moveArray = {startingIndex, targetIndex};
             if (isValidMove(startingIndex, targetIndex, 0, board)) {
-                enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
                 enPassantDiscardMap.put(moveArray, leftAttackingPawnIndex);
+            }
+            if (!Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
+                enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
+            } else {
+                System.out.println("Move ommited: " + moveArray[0] + " to " + moveArray[1]);
             }
         }
 
@@ -466,8 +470,12 @@ public class Moves {
             enPassantMove.add(targetIndex);
             int[] moveArray = {startingIndex, targetIndex};
             if (isValidMove(startingIndex, targetIndex, 1, board)) {
-                enPassantMoves.add(enPassantMove);
                 enPassantDiscardMap.put(moveArray, rightAttackingPawnIndex);
+            }
+            if (!Legalization.movePutsKingInCheck(colorUp, moveArray, board)) {
+                enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
+            } else {
+                System.out.println("Move ommited: " + moveArray[0] + " to " + moveArray[1]);
             }
         }
 

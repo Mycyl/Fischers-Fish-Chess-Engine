@@ -54,6 +54,12 @@ public class Game {
         return positionMap;
     }
 
+    /**
+     * Method to check if a move is an en passant move.
+     * @param move The move to be checked.
+     * @return True if the move is an en passant move, false otherwise.
+     * @see Moves#enPassantDiscardMap
+     */
     private static boolean isEnPassant (int[] move) {
         return Arrays.equals(move, Moves.enPassantDiscardMap.keySet().iterator().next());
     }
