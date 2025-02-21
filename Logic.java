@@ -6,7 +6,7 @@ public class Logic {
 
     public void start () {
         Scanner scan = new Scanner(System.in);
-        Board board = new Board("8/3p4/8/4P3/8/8/8/8");
+        Board board = new Board(Board.getStartingFen());
         System.out.println(board.getPositionMap());
         System.out.println();
         Moves.generatePseudoLegalMoves(board);
@@ -25,9 +25,11 @@ public class Logic {
         while (response != -1) {
             // System.out.println("White Moves:  " + Moves.whiteMoveList);
             // System.out.println("Black Moves:  " + Moves.blackMoveList);
+            System.out.println(board.getPositionMap());
             System.out.println("FEN STRING: " + board.positionToFEN(board.getPositionMap()));
             int[] move = new int[2];
             System.out.println();
+            System.out.println(Moves.enPassantDiscardMap);
             System.out.print("Enter a Starting Index: -1 to exit: ");
             response = scan.nextInt();
             scan.nextLine();
@@ -37,12 +39,7 @@ public class Logic {
             move[0] = response;
             move[1] = endingIndex;
             Game.addMove(move);
-            System.out.println(board.getPositionMap());
             board.setPosition(Game.updatePosition(board.getPositionMap(), move));
-            System.out.println(board.getPositionMap());
-            
-            System.out.println(board.getPositionMap());
-            
 
             Moves.generatePseudoLegalMoves(board);
             // ReverseRay.updateReverseRayKingList(Pieces.White, board, false); // this needs to be run before generate moves
@@ -64,14 +61,12 @@ public class Logic {
             System.out.println("Discard List" + Moves.discardIndexList);
             System.out.println("-----------------------------");
             System.out.println("Reverse Ray List for White King: " + ReverseRay.reverseRayKingList(Pieces.White, board));
-            System.out.println(board.getPositionMap());
             
             // System.out.println("White King: " + Moves.generateCastlingMoves(Pieces.WHITE_KING_START_INDEX, board));
             // System.out.println("Black King: " + Moves.generateCastlingMoves(Pieces.BLACK_KING_START_INDEX, board));
             //System.out.println("All possible moves: " + Moves.generatePseudoLegalMoves (board));
             // System.out.println("Psuedo Legal Moves Available: " + Game.moveCounter(Moves.generatePseudoLegalMoves(board)));
 
-            System.out.println(board.getPositionMap());
         }
         scan.close();
 

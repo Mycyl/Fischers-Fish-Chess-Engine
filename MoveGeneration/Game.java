@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Game class to handle the game logic and state.
@@ -36,6 +38,14 @@ public class Game {
         int startingIndex = move[0];
         int endingIndex = move[1];
         if(positionMap.containsKey(startingIndex)) {
+            if (Moves.enPassantDiscardMap.size() > 0) {
+                if (isEnPassant(move)) {
+                    System.out.println(Moves.enPassantDiscardMap);
+                    System.out.println(move);
+                    System.out.println("Removing Index " + Moves.enPassantDiscardMap.get(Moves.enPassantDiscardMap.keySet().iterator().next()));
+                    positionMap.remove(Moves.enPassantDiscardMap.get(Moves.enPassantDiscardMap.keySet().iterator().next()));
+                }
+            }    
             int piece = positionMap.get(startingIndex);
             positionMap.remove(startingIndex);
             positionMap.put(endingIndex, piece);
@@ -43,6 +53,11 @@ public class Game {
 
         return positionMap;
     }
+
+    private static boolean isEnPassant (int[] move) {
+        return Arrays.equals(move, Moves.enPassantDiscardMap.keySet().iterator().next());
+    }
+
 
     /**
      * Method to get the last move taken in the game.

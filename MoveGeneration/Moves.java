@@ -37,6 +37,8 @@ public class Moves {
      */
     public static ArrayList<ArrayList<Integer>> enPassantMoveList = new ArrayList<ArrayList<Integer>>(); // To be implemented
 
+    public static Map<int[], Integer> enPassantDiscardMap = new HashMap<int[], Integer> ();
+
     /**
      * Constructor is made private to prevent instantiation of the Moves class.
      */
@@ -110,6 +112,7 @@ public class Moves {
         blackMoveList.clear();
         discardIndexList.clear();
         enPassantMoveList.clear();
+        enPassantDiscardMap.clear();
         //ArrayList<String> list = new ArrayList<>(set)
 
         Map<Integer, Integer> positionMapCopy = new HashMap<>(board.getPositionMap()); 
@@ -448,9 +451,10 @@ public class Moves {
             enPassantMove.add(startingIndex);
             int targetIndex = startingIndex + DirectionOffsets.dirOffsetsPawn[0] * dirMultiplier;
             enPassantMove.add(targetIndex);
+            int[] moveArray = {startingIndex, targetIndex};
             if (isValidMove(startingIndex, targetIndex, 0, board)) {
                 enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
-                discardIndexList.add(leftAttackingPawnIndex);
+                enPassantDiscardMap.put(moveArray, leftAttackingPawnIndex);
             }
         }
 
@@ -460,15 +464,15 @@ public class Moves {
             enPassantMove.add(startingIndex);
             int targetIndex = startingIndex + DirectionOffsets.dirOffsetsPawn[1] * dirMultiplier;
             enPassantMove.add(targetIndex);
+            int[] moveArray = {startingIndex, targetIndex};
             if (isValidMove(startingIndex, targetIndex, 1, board)) {
-                enPassantMoves.add(enPassantMove); // remove pawn adjacent to starting index
-                discardIndexList.add(rightAttackingPawnIndex);
+                enPassantMoves.add(enPassantMove);
+                enPassantDiscardMap.put(moveArray, rightAttackingPawnIndex);
             }
         }
 
         if (enPassantMoves.size() > 0) {
             colorList.add(enPassantMoves);
-
         }
     }
 }
