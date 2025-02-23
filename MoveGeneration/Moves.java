@@ -14,6 +14,8 @@ public class Moves {
     
     /**
      * whiteMoveList features the legal moves excluding castling and *en passant for white
+     * allMoves, pieceMoves, beginningIndex, endingIndex
+     * e.g. {{{1, 2}, {1, 3}, {1, 4}}, {{2, 3}, {2, 4}, {2, 5}}, {{3, 4}, {3, 5}, {3, 6}}}...
      */
     public static ArrayList<ArrayList<ArrayList<Integer>>> whiteMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>();
     /**
@@ -23,7 +25,7 @@ public class Moves {
     /**
      * castlingMoveList features the legal castling moves for both white and black
      */
-    public static ArrayList<ArrayList<ArrayList<Integer>>> castlingMoveList = new ArrayList<ArrayList<ArrayList<Integer>>>(); // To be implemented
+    public static ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> castlingMoveList = new ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>>(); // To be implemented
     /**
      * discardList features the pieces that are discarded from the board after an *en passant move
      */
@@ -43,6 +45,17 @@ public class Moves {
      * Constructor is made private to prevent instantiation of the Moves class.
      */
     private Moves () {} 
+
+    public static int moveGenerationTest (int depth) {
+
+        if (depth == 0) {
+            return 1;
+        }
+
+       int  numPositions = 0;
+
+        return numPositions;
+    }
 
     /**
      * isValidMove checks if the move is valid (doesn't move in an unwanted way) for the piece at the starting index.
@@ -113,6 +126,7 @@ public class Moves {
         discardIndexList.clear();
         enPassantMoveList.clear();
         enPassantDiscardMap.clear();
+        castlingMoveList.clear();
         //ArrayList<String> list = new ArrayList<>(set)
 
         Map<Integer, Integer> positionMapCopy = new HashMap<>(board.getPositionMap()); 
@@ -128,6 +142,7 @@ public class Moves {
                 generateKnightMoves(key, board);
             } else if (Pieces.isKing(piece)) {
                 generateKingMoves(key, board);
+                generateCastlingMoves(key, board);
             } else if (Pieces.isSlidingPiece(piece)) {
                 generateSlidingMoves(key, board);
             }
@@ -338,14 +353,14 @@ public class Moves {
      *                              the moves, where the Integers in each ArrayList are
      *                              the indexes (Starting Index, Ending Index)
      */
-    public static ArrayList<ArrayList<ArrayList<Integer>>> generateCastlingMoves (int startingIndex, Board board) { // To be implemented
+    public static void generateCastlingMoves (int startingIndex, Board board) { // if king moved
         ArrayList<ArrayList<ArrayList<Integer>>> castlingMoves = new ArrayList<ArrayList<ArrayList<Integer>>>();
         int colorUp = Pieces.sameColor(board.getPositionMap().get(startingIndex), Pieces.White) ? Pieces.White : Pieces.Black;
         ArrayList<ArrayList<ArrayList<Integer>>> colorList = (colorUp == Pieces.White) ? whiteMoveList : blackMoveList;
         boolean kingMoved = Pieces.kingMoved(Game.allMovesTaken, colorUp);
 
         if (kingMoved) {
-            return castlingMoves;
+            return;
         }
 
         int[] dirOffsetsKingCastle = DirectionOffsets.dirOffsetsKingCastle;
@@ -361,6 +376,8 @@ public class Moves {
 
         for (int i = 0; i < rookMoved.length; i++) {
             if (Pieces.castlingAvailable(rookMoved[i], kingMoved, startingIndex, rookIndexes[i], board)) {
+
+                System.out.println("Castling Available");
 
                 int[] dirOffsetsMoveCastleKing = DirectionOffsets.dirOffsetsMoveCastleKing;
                 int[] dirOffsetsMoveCastleRook = DirectionOffsets.dirOffsetsMoveCastleRook;
@@ -386,8 +403,8 @@ public class Moves {
 
                 castlingMoves.add(castlingMove); // check if placed right
             }
-        }
-        return castlingMoves;
+        } // {{kingStartingIndex, kingEndingIndex}, {rookStartingIndex, rookEndingIndex}}
+        castlingMoveList.add(castlingMoves);
     }
 
     /**

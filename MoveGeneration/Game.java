@@ -54,6 +54,13 @@ public class Game {
         return positionMap;
     }
 
+    public static Map<Integer, Integer> updatePosition (Map<Integer, Integer> positionMap, ArrayList<int[]> castlingMove) {
+        for (int[] move : castlingMove) {
+            positionMap = updatePosition(positionMap, move);
+        }
+        return positionMap;
+    }
+
     /**
      * Method to check if a move is an en passant move.
      * @param move The move to be checked.
@@ -63,7 +70,6 @@ public class Game {
     private static boolean isEnPassant (int[] move) {
         return Arrays.equals(move, Moves.enPassantDiscardMap.keySet().iterator().next());
     }
-
 
     /**
      * Method to get the last move taken in the game.

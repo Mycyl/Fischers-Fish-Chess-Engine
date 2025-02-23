@@ -29,3 +29,4 @@ Expected Outcome: [17, 44]
 
 apply black legalization
 remove moves that capture the king
+![alt text](image.png) Number of moves for each depth
