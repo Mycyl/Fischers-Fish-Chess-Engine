@@ -212,7 +212,7 @@ public class Pieces {
         int endIndex = (kingIndex > rookIndex) ? 4 : 6;
         for (int i = startIndex; i < endIndex; i++) {
             int targetIndex = kingIndex + DirectionOffsets.dirOffsetsKingCastle[i];
-            if (isEmpty(targetIndex, board)) {
+            if (!isEmpty(targetIndex, board)) {
                 return false;
             }
         }

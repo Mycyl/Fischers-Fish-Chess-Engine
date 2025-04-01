@@ -21,11 +21,18 @@ public class Game {
      */
     public static ArrayList<int[]> allMovesTaken = new ArrayList<int[]>();
 
+    public static Map<Integer, Integer> previousMap = null;
+
     /**
      * Method to add a move to the list of all moves taken in the game.
      */
     public static void addMove (int[] move) {
         allMovesTaken.add(move);
+    }
+
+    public static Map<Integer, Integer> unmakeMove (int[] move) {
+        allMovesTaken.remove(allMovesTaken.size() - 1);
+        return previousMap;
     }
 
     /**
@@ -35,6 +42,7 @@ public class Game {
      * @return The updated position map of the board.
      */
     public static Map<Integer, Integer> updatePosition (Map<Integer, Integer> positionMap, int[] move) {
+        previousMap = positionMap;
         int startingIndex = move[0];
         int endingIndex = move[1];
         if(positionMap.containsKey(startingIndex)) {

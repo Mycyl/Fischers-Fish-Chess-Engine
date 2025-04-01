@@ -60,7 +60,8 @@ public class Logic {
             // System.out.println("Black King in Check: " + Legalization.isKingInCheck(Pieces.Black, false));
             System.out.println("Discard List" + Moves.discardIndexList);
             System.out.println("-----------------------------");
-            System.out.println("Castling List: " + Moves.castlingMoveList);
+            System.out.println("Castling List Black: " + Moves.blackCastlingMoveList);
+            System.out.println("Castling List White: " + Moves.whiteCastlingMoveList);
             System.out.println("-----------------------------");
             System.out.println("Reverse Ray List for White King: " + ReverseRay.reverseRayKingList(Pieces.White, board));
             
